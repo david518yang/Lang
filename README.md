@@ -3,6 +3,10 @@
 # MODE
 
 ## Story/Introduction
+MODE is the newest star in the ever evolving landscape of programming languages. Created with 
+simplicity in mind, MODE combines features from popular languages like JavaScript and Swift to 
+offer a unique blend of both intuitive syntax and powerful functionalities. Through MODE, we hope software 
+developers will enter a new realm of possibilites where the boundaries of coding are expanded.
 
 ## Features
 
