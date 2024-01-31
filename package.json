@@ -1,13 +1,13 @@
 {
   "name": "MODE",
   "version": "1.0.0",
-  "description": "jjjj",
-  "main": "index.js",
+  "description": "A compiler for MODE",
+  "main": "MODE.js",
   "type": "module",
   "scripts": {
     "test": "c8 mocha"
   },
-  "keywords": [],
+  "keywords": ["compiler", "ohm"],
   "author": "Matt Martinez, Owen Sheow, David Yang, Eric Hwang",
   "license": "MIT",
   "devDependencies": {
