@@ -2,6 +2,8 @@
 
 # MODE
 
+## Matt Martinez, Owen Sheow, David Yang, Eric Hwang
+
 ## Story/Introduction
 MODE is the newest star in the ever evolving landscape of programming languages. Created with 
 simplicity in mind, MODE combines features from popular languages like JavaScript and Swift to 
