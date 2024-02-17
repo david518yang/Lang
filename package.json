@@ -18,6 +18,7 @@
     "mocha": "^10.2.0"
   },
   "dependencies": {
+    "fs": "^0.0.1-security",
     "ohm-js": "^17.1.0"
   }
 }
