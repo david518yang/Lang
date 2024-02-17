@@ -1,5 +1,5 @@
 {
-  "name": "MODE",
+  "name": "mode",
   "version": "1.0.0",
   "description": "A compiler for MODE",
   "main": "MODE.js",
@@ -7,7 +7,10 @@
   "scripts": {
     "test": "c8 mocha"
   },
-  "keywords": ["compiler", "ohm"],
+  "keywords": [
+    "compiler",
+    "ohm"
+  ],
   "author": "Matt Martinez, Owen Sheow, David Yang, Eric Hwang",
   "license": "MIT",
   "devDependencies": {

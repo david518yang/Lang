@@ -1,1 +1,9 @@
-// Insert example here
+x = 10;
+
+print x + 5;
+
+if x < 0 { print "Negative"; } else { print "Non-negative"; }
+
+while x > 0 { x = x - 1; }
+
+y = x ?;
