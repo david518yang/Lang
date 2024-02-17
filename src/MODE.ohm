@@ -20,7 +20,7 @@ MODE {
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term            --binary
                 | Term
-    Lambda      = ["(" (id ",")* id ")" "->" Exp]  --lambda
+    Lambda      = "(" (id ",")* id ")" "->" Exp  --lambda
     ClassDef    = "class" id Block                 --classdef
     Term        = Term ("*" | "/" | "%") Factor    --binary
                 | Factor
