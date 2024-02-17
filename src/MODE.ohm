@@ -1,4 +1,3 @@
-//Example Ohm file from class
 MODE {
 	Program     = Stmt+
     Stmt        = Assignment 
@@ -6,6 +5,7 @@ MODE {
                 | IfStmt
                 | WhileStmt
                 | BreakStmt
+                | ClassDef
     Assignment  = id "=" Exp ";"                 --typeinferenceassignment
                 | id "?"                         --optionalvar
     Print       = print Exp ";"
@@ -21,7 +21,7 @@ MODE {
     Exp1        = Exp1 ("+" | "-") Term            --binary
                 | Term
     Lambda      = "(" (id ",")* id ")" "->" Exp  --lambda
-    ClassDef    = "class" id Block                 --classdef
+    ClassDef    = "class" id Lambda? Block                --classdef
     Term        = Term ("*" | "/" | "%") Factor    --binary
                 | Factor
     Factor      = Primary "**" Factor              --binary

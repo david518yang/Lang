@@ -20,12 +20,22 @@ const syntaxChecks = [
 
 const syntaxErrors = [
     ["invalid identifier name", "ab)c = 2;", /Line 1, col 3/],
+    ["malformed number", "x= 2.;", /Line 1, col 6/],
     ["missing semicolon in assignment", "x = 3 y = 1", /Line 1, col 7/],
-    ["need semi-colon at end of print statement", "print name", /Line 1, col 10/],
-    ["a non-operator", "print 7 * (2 _ 3)", /Line 1, col 15/],
-    ["a statement starting with expression", "x * 5;", /Line 1, col 3/],
+    ["missing semicolon in print statement", "print name", /Line 1, col 11/],
+    ["missing right operand", "print(5 -", /Line 1, col 10/],
+    ["non-operator", "print 7 * (2 _ 3)", /Line 1, col 14/],
+    ["expression starting with )", "x = );", /Line 1, col 5/],
+    ["statement starting with expression", "x * 5;", /Line 1, col 3/],
     ["illegal statement line 2", "print 5;\nx * 5;", /Line 2, col 3/],
-    ["else with no if statement", "print 5;\nelse { print 3; }", /Line 2, col 3/],
+    ["statement starting with )", "print(5);\n) * 5", /Line 2, col 1/],
+    ["expression starting with *", "x = * 71;", /Line 1, col 5/],
+    ["else with no if statement", "print 5;\nelse { print 3; }", /Line 2, col 6/],
+    ["need '{' after conditional","if 3 6 + 4",/Line 1, col 6/],
+    ["invalid relational operator","if 3>>4",/Line 1, col 6/],
+    ["invalid relational operator","if 3<<4",/Line 1, col 6/],
+    ["invalid relational operator","if 3><4",/Line 1, col 6/],
+    ["invalid relational operator","if 3<>4",/Line 1, col 6/],
 ]
 
 describe("The parser", () => {
@@ -35,7 +45,7 @@ describe("The parser", () => {
       })
     }
     for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
-      it(`does not permit ${scenario}`, () => {
+      it(`rejects ${scenario}`, () => {
         assert.throws(() => parse(source), errorMessagePattern)
       })
     }
