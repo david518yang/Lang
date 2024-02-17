@@ -20,5 +20,10 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "ohm-js": "^17.1.0"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
   }
 }

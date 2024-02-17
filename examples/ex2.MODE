@@ -1,0 +1,11 @@
+auto x = 10;
+
+mode Tripler(number):
+    my.number = number;
+
+    triple():
+        return my.number * 3;
+
+auto tripler = new Tripler(x);
+
+auto numba = tripler.triple();
