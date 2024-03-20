@@ -10,6 +10,10 @@ export function variable(name, readOnly, type) {
     return { kind: 'Variable', name, readOnly, type }
 }
 
+export function classDeclaration(className) {
+    return { kind: 'ClassDeclaration', className }
+}
+
 export const boolType = { kind: 'BoolType' }
 export const intType = { kind: 'IntType' }
 export const floatType = { kind: 'FloatType' }
@@ -27,10 +31,6 @@ export function functionDeclaration(fun, params, body) {
 
 export function fun(name, type) {
     return { kind: 'Function', name, type }
-}
-
-export function arrayType(baseType) {
-    return { kind: 'ArrayType', baseType }
 }
 
 export function functionType(paramTypes, returnType) {

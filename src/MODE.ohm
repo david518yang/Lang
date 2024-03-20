@@ -6,37 +6,40 @@ MODE {
                 | WhileStmt
                 | BreakStmt
                 | ClassDef
-                | Return                         --shortReturn
-                | Return Exp                     --Return
-    VarDecl     = id "=" Exp ";"                 --typeinferenceassignment
-                | id "?"                         --optionalvar
+                | return                            --shortReturn
+                | return Exp                        --Return
+    VarDecl     = id "=" Exp ";"                    --typeinferenceassignment
+                | id "?"                            --optionalvar
     Print       = print Exp ";"
     IfStmt      = if Exp Block Else?
     Else        = else IfStmt
                 | else Block
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
-    ForStmt     = "for" id in Exp Block
+    ForStmt     = "for" id "in" Exp Block
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = "if" "(" Exp ")" "yield" Exp "otherwise" Exp --ternary
-    Exp         = Exp1 relop Exp1                  --comparison
+    Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
-    Exp1        = Exp1 ("+" | "-") Term            --binary
+    Exp1        = Exp1 ("+" | "-") Term             --binary
                 | Term
-    Lambda      = "(" (id ",")* id ")" "->" Exp    --lambda
-    ClassDef    = "class" id "{" Field* "}"        --classdef
+    Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
+    ClassDef    = "class" id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
-    Type        = Type
-    Term        = Term ("*" | "/" | "%") Factor    --binary
+    Type        = Type "?"                          --optional
+                | Type "[]"                         --arr
+                | Lambda                            --lambda
+                | id                                --classtype
+    Term        = Term ("*" | "/" | "%") Factor     --binary
                 | Factor
-    Factor      = Primary "**" Factor              --binary
-                | "-" Primary                      --negation
+    Factor      = Primary "**" Factor               --binary
+                | "-" Primary                       --negation
                 | Primary
-    Primary     = id "(" ListOf<Exp, ","> ")"      --call
-                | numeral                          --num
-                | id                               --id
-                | "(" Exp ")"                      --parens
+    Primary     = id "(" ListOf<Exp, ","> ")"       --call
+                | numeral                           --num
+                | id                                --id
+                | "(" Exp ")"                       --parens
     
     relop       = "<=" | "<" | "==" | ">=" | ">"
     numeral     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
@@ -46,6 +49,8 @@ MODE {
     if          = "if" ~idchar
     else        = "else" ~idchar
     while       = "while" ~idchar
+    for         = "for" ~idchar
+    in          = "in" ~idchar
     idchar      = letter | digit | "_"
     id          = ~print letter idchar*
     string		= "\"" char* "\""
