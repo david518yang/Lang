@@ -1,18 +1,22 @@
 MODE {
 	Program     = Stmt+
-    Stmt        = Assignment 
+    Stmt        = VarDecl 
                 | Print
                 | IfStmt
                 | WhileStmt
                 | BreakStmt
                 | ClassDef
-    Assignment  = id "=" Exp ";"                 --typeinferenceassignment
+                | Return                         --shortReturn
+                | Return Exp                     --Return
+    VarDecl     = id "=" Exp ";"                 --typeinferenceassignment
                 | id "?"                         --optionalvar
     Print       = print Exp ";"
-    IfStmt      = if Exp Block ElsePart?
-    ElsePart    = else IfStmt
+    IfStmt      = if Exp Block Else?
+    Else        = else IfStmt
                 | else Block
+    LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
+    ForStmt     = "for" id in Exp Block
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = "if" "(" Exp ")" "yield" Exp "otherwise" Exp --ternary
@@ -20,8 +24,10 @@ MODE {
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term            --binary
                 | Term
-    Lambda      = "(" (id ",")* id ")" "->" Exp  --lambda
-    ClassDef    = "class" id Lambda? Block                --classdef
+    Lambda      = "(" (id ",")* id ")" "->" Exp    --lambda
+    ClassDef    = "class" id "{" Field* "}"        --classdef
+    Field       = id ":" Type ";"
+    Type        = Type
     Term        = Term ("*" | "/" | "%") Factor    --binary
                 | Factor
     Factor      = Primary "**" Factor              --binary
@@ -36,6 +42,7 @@ MODE {
     numeral     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
     print       = "print" ~idchar
     break       = "break" ~idchar
+    return      = "return" ~idchar
     if          = "if" ~idchar
     else        = "else" ~idchar
     while       = "while" ~idchar
