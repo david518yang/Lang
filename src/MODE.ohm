@@ -8,11 +8,12 @@ MODE {
                 | ClassDef
                 | return ";"                            --shortReturn
                 | return Exp ";"                        --Return
+    
     VarDecl     = id "=" Exp ";"                    --typeinferenceassignment
                 | id "?"                            --optionalvar
     Print       = print Exp ";"
     IfStmt      = if Exp Block Else?                 --ogif
-    				| Ternary                                   --ternary
+    	        | Ternary                                   --ternary
     Else        = else IfStmt
                 | else Block
     LoopStmt    = WhileStmt | ForStmt
@@ -21,10 +22,6 @@ MODE {
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";" --ternary
-    Exp         = Exp1 relop Exp1                   --comparison
-                | Exp1
-    Exp1        = Exp1 ("+" | "-") Term             --binary
-                | Term
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
     ClassDef    = "class" id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
@@ -32,34 +29,26 @@ MODE {
                 | Type "[]"                         --arr
                 | Lambda                            --lambda
                 | id                                --classtype
+                
+    Exp         = Exp1 relop Exp1                   --comparison
+                | Exp1
+    Exp1        = Exp1 ("+" | "-") Term             --binary
+                | Term
     Term        = Term ("*" | "/" | "%") Factor     --binary
                 | Factor
     Factor      = Primary "**" Factor               --binary
                 | "-" Primary                       --negation
                 | Primary
     Primary     = id "(" ListOf<Exp, ","> ")"       --call
-                | numeral                           --num
+                | float                           --num
                 | id                                --id
                 | string ~mut                       --string
                 | true ~mut                         --true
                 | false ~mut                        --false
                 | "(" Exp ")"                       --parens
     
-    relop       = "<=" | "<" | "==" | ">=" | ">"
-    numeral     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
-    print       = "print" ~idchar
-    break       = "break" ~idchar
-    return      = "return" ~idchar
-    if          = "if" ~idchar
-    else        = "else" ~idchar
-    while       = "while" ~idchar
-    for         = "for" ~idchar
-    in          = "in" ~idchar
-    true        = "true" ~idchar
-    false       = "false" ~idchar
-    keyword     = if | else | while | for | in | break | return | true | false
-    idchar      = letter | digit | "_"
-    id          = ~keyword letter idchar*
+    relop       = "<=" | "<" | "==" | "!=" | ">=" | ">"
+    float       = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
     string		= "\"" char* "\""
     char		= ~"\\" ~"\"" any							--normalchars
     			| "\\" ("'" | "\"" | "n" | "\\") 			--escape
@@ -67,6 +56,21 @@ MODE {
                 | "%{"id"}"                                 --stringinterpolation
     hex			= hexDigit
     mut         = ~"==" "=" | "++" | "--"
+
+    print       = "print" ~idchar
+    if          = "if" ~idchar
+    else        = "else" ~idchar
+    while       = "while" ~idchar
+    for         = "for" ~idchar
+    in          = "in" ~idchar
+    break       = "break" ~idchar
+    return      = "return" ~idchar
+    true        = "true" ~idchar
+    false       = "false" ~idchar
+    keyword     = print | if | else | while | for | in | break | return | true | false
+    idchar      = letter | digit | "_"
+    id          = ~keyword letter idchar*
+
     space       += "//" (~"\n" any)*               --comment
     
 }
