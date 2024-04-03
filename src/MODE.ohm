@@ -3,23 +3,24 @@ MODE {
     Stmt        = VarDecl 
                 | Print
                 | IfStmt
-                | WhileStmt
+                | LoopStmt
                 | BreakStmt
                 | ClassDef
-                | return                            --shortReturn
-                | return Exp                        --Return
+                | return ";"                            --shortReturn
+                | return Exp ";"                        --Return
     VarDecl     = id "=" Exp ";"                    --typeinferenceassignment
                 | id "?"                            --optionalvar
     Print       = print Exp ";"
-    IfStmt      = if Exp Block Else?
+    IfStmt      = if Exp Block Else?                 --ogif
+    				| Ternary                                   --ternary
     Else        = else IfStmt
                 | else Block
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
-    ForStmt     = "for" id "in" Exp Block
+    ForStmt     = for id in Exp Block
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
-    Ternary     = "if" "(" Exp ")" "yield" Exp "otherwise" Exp --ternary
+    Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";" --ternary
     Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term             --binary
@@ -39,6 +40,9 @@ MODE {
     Primary     = id "(" ListOf<Exp, ","> ")"       --call
                 | numeral                           --num
                 | id                                --id
+                | string ~mut                       --string
+                | true ~mut                         --true
+                | false ~mut                        --false
                 | "(" Exp ")"                       --parens
     
     relop       = "<=" | "<" | "==" | ">=" | ">"
@@ -51,14 +55,18 @@ MODE {
     while       = "while" ~idchar
     for         = "for" ~idchar
     in          = "in" ~idchar
+    true        = "true" ~idchar
+    false       = "false" ~idchar
+    keyword     = if | else | while | for | in | break | return | true | false
     idchar      = letter | digit | "_"
-    id          = ~print letter idchar*
+    id          = ~keyword letter idchar*
     string		= "\"" char* "\""
     char		= ~"\\" ~"\"" any							--normalchars
     			| "\\" ("'" | "\"" | "n" | "\\") 			--escape
     			| "\\u{" hex? hex? hex? hex? hex? hex? "}"	--hex
                 | "%{"id"}"                                 --stringinterpolation
     hex			= hexDigit
+    mut         = ~"==" "=" | "++" | "--"
     space       += "//" (~"\n" any)*               --comment
     
 }
