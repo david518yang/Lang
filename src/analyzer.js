@@ -306,12 +306,10 @@ export default function analyze(match) {
                 return core.program(statements.children.map((s) => s.rep()))
             },
 
-            VarDecl(modifier, id, _eq, exp, _semicolon) {
+            VarDecl(_auto, id, _eq, exp, _semicolon) {
                 const initializer = exp.rep()
-                const readOnly = modifier.sourceString === 'const'
                 const variable = core.variable(
                     id.sourceString,
-                    readOnly,
                     initializer.type
                 )
                 mustNotAlreadyBeDeclared(id.sourceString, { at: id })
@@ -319,20 +317,32 @@ export default function analyze(match) {
                 return core.variableDeclaration(variable, initializer)
             },
 
-            TypeDecl(_struct, id, _left, fields, _right) {
-                // To allow recursion, enter into context without any fields yet
-                const type = core.structType(id.sourceString, [])
-                mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-                context.add(id.sourceString, type)
-                // Now add the types as you parse and analyze. Since we already added
-                // the struct type itself into the context, we can use it in fields.
-                type.fields = fields.children.map((field) => field.rep())
-                mustHaveDistinctFields(type, { at: id })
-                mustNotBeSelfContaining(type, { at: id })
-                return core.typeDeclaration(type)
+            Assignment(variable, _eq, expression, _semicolon) {
+                const source = expression.rep()
+                const target = variable.rep()
+                // mustBeAssignable(
+                //     source,
+                //     { toType: target.type },
+                //     { at: variable }
+                // )
+                return core.assignment(target, source)
             },
 
-            Field(id, _colon, type) {
+            // Eventually use ClassDef
+            // TypeDecl(_struct, id, _left, fields, _right) {
+            //     // To allow recursion, enter into context without any fields yet
+            //     const type = core.structType(id.sourceString, [])
+            //     mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+            //     context.add(id.sourceString, type)
+            //     // Now add the types as you parse and analyze. Since we already added
+            //     // the struct type itself into the context, we can use it in fields.
+            //     type.fields = fields.children.map((field) => field.rep())
+            //     mustHaveDistinctFields(type, { at: id })
+            //     mustNotBeSelfContaining(type, { at: id })
+            //     return core.typeDeclaration(type)
+            // },
+
+            Field(id, _colon, type, _semicolon) {
                 return core.field(id.sourceString, type.rep())
             },
 
@@ -400,36 +410,16 @@ export default function analyze(match) {
                 return entity
             },
 
-            Statement_bump(exp, operator, _semicolon) {
-                const variable = exp.rep()
-                mustHaveIntegerType(variable, { at: exp })
-                return operator.sourceString === '++'
-                    ? core.increment(variable)
-                    : core.decrement(variable)
-            },
-
-            Statement_assign(variable, _eq, expression, _semicolon) {
-                const source = expression.rep()
-                const target = variable.rep()
-                mustBeAssignable(
-                    source,
-                    { toType: target.type },
-                    { at: variable }
-                )
-                mustNotBeReadOnly(target, { at: variable })
-                return core.assignment(target, source)
-            },
-
             Statement_call(call, _semicolon) {
                 return call.rep()
             },
 
-            Statement_break(breakKeyword, _semicolon) {
+            BreakStmt(breakKeyword, _semicolon) {
                 mustBeInLoop({ at: breakKeyword })
                 return core.breakStatement
             },
 
-            Statement_return(returnKeyword, exp, _semicolon) {
+            Stmt_return(returnKeyword, exp, _semicolon) {
                 mustBeInAFunction({ at: returnKeyword })
                 mustReturnSomething(context.function, { at: returnKeyword })
                 const returnExpression = exp.rep()
@@ -441,7 +431,7 @@ export default function analyze(match) {
                 return core.returnStatement(returnExpression)
             },
 
-            Statement_shortreturn(returnKeyword, _semicolon) {
+            Stmt_shortreturn(returnKeyword, _semicolon) {
                 mustBeInAFunction({ at: returnKeyword })
                 mustNotReturnAnything(context.function, { at: returnKeyword })
                 return core.shortReturnStatement()
@@ -476,6 +466,21 @@ export default function analyze(match) {
                 const consequent = block.rep()
                 context = context.parent
                 return core.shortIfStatement(test, consequent)
+            },
+
+            // Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";"
+            Ternary(
+                _if,
+                _open,
+                test,
+                _close,
+                _yield,
+                consequent,
+                _otherwise,
+                alternate,
+                _semicolon
+            ) {
+                throw new Error('Ternary operator not yet implemented')
             },
 
             LoopStmt_while(_while, exp, block) {
@@ -701,34 +706,34 @@ export default function analyze(match) {
                 return core.unary(op, operand, type)
             },
 
-            Exp9_emptyarray(ty, _open, _close) {
+            Primary_emptyarray(ty, _open, _close) {
                 const type = ty.rep()
                 mustBeAnArrayType(type, { at: ty })
                 return core.emptyArray(type)
             },
 
-            Exp9_arrayexp(_open, args, _close) {
+            Primary_arrayexp(_open, args, _close) {
                 const elements = args.asIteration().children.map((e) => e.rep())
                 mustAllHaveSameType(elements, { at: args })
                 return core.arrayExpression(elements)
             },
 
-            Exp9_emptyopt(_no, type) {
+            Primary_emptyopt(_no, type) {
                 return core.emptyOptional(type.rep())
             },
 
-            Exp9_parens(_open, expression, _close) {
+            Primary_parens(_open, expression, _close) {
                 return expression.rep()
             },
 
-            Exp9_subscript(exp1, _open, exp2, _close) {
+            Primary_subscript(exp1, _open, exp2, _close) {
                 const [array, subscript] = [exp1.rep(), exp2.rep()]
                 mustHaveAnArrayType(array, { at: exp1 })
                 mustHaveIntegerType(subscript, { at: exp2 })
                 return core.subscript(array, subscript)
             },
 
-            Exp9_member(exp, dot, id) {
+            Primary_member(exp, dot, id) {
                 const object = exp.rep()
                 let structType
                 if (dot.sourceString === '?.') {
@@ -745,7 +750,7 @@ export default function analyze(match) {
                 return core.memberExpression(object, dot.sourceString, field)
             },
 
-            Exp9_call(exp, open, expList, _close) {
+            Primary_call(exp, open, expList, _close) {
                 const callee = exp.rep()
                 mustBeCallable(callee, { at: exp })
                 const exps = expList.asIteration().children
@@ -770,7 +775,7 @@ export default function analyze(match) {
                     : core.functionCall(callee, args)
             },
 
-            Exp9_id(id) {
+            Primary_id(id) {
                 // When an id appears in an expression, it had better have been declared
                 const entity = context.lookup(id.sourceString)
                 mustHaveBeenFound(entity, id.sourceString, { at: id })
@@ -785,17 +790,12 @@ export default function analyze(match) {
                 return false
             },
 
-            intlit(_digits) {
-                // Carlos ints will be represented as plain JS bigints
-                return BigInt(this.sourceString)
-            },
-
-            floatlit(_whole, _point, _fraction, _e, _sign, _exponent) {
+            float(_whole, _point, _fraction, _e, _sign, _exponent) {
                 // Carlos floats will be represented as plain JS numbers
                 return Number(this.sourceString)
             },
 
-            stringlit(_openQuote, _chars, _closeQuote) {
+            string(_openQuote, _chars, _closeQuote) {
                 // Carlos strings will be represented as plain JS strings, including
                 // the quotation marks
                 return this.sourceString
