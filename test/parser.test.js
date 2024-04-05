@@ -10,11 +10,8 @@ const syntaxChecks = [
     ['factorial', `a = 5; b = 1; while a > 0 { b = b * a; a = a - 1; }`],
     ['if statement', `if 1 { print 1; }`],
     ['if else statement', `if 1 { print 1; } else { print 2; }`],
-    ['while statement', `while 1 { print 1; }`],
-    [
-        'while if else statement',
-        `while 1 { if 1 { print 1; } else { print 2; } }`,
-    ],
+    ['while statement', `while x=1 { print 1; }`],
+    ['while if else statement', `while x=1 { if x=1 { print 1; } else { print 2; } }`],
     ['nested while', `while x == 1 { while 1 { print 1; } }`],
     ['nested if', `if 1 { if 1 { print 1; } }`],
     ['break statement', `while 1 { break; }`],

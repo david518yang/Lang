@@ -2,6 +2,7 @@ MODE {
 	Program     = Stmt+
     Stmt        = VarDecl 
                 | Assignment
+                | FunDecl
                 | Print
                 | IfStmt
                 | LoopStmt
@@ -20,17 +21,22 @@ MODE {
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
     ForStmt     = for id in Exp Block
+                       | for id in Range Block
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";"
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
     ClassDef    = "class" id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
+    FunDecl     = func id Params (":" Type)? Block
+  	Params      = "(" ListOf<Param, ","> ")"
+ 	Param       = id ":" Type
+    
     Type        = Type "?"                          --optional
                 | Type "[]"                         --arr
                 | Lambda                            --lambda
                 | id                                --classtype
-                
+    Range = digit ".." digit
     Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term             --binary
@@ -60,6 +66,7 @@ MODE {
 
     print       = "print" ~idchar
     auto        = "auto" ~idchar
+    func    = "func" ~idchar
     if          = "if" ~idchar
     else        = "else" ~idchar
     while       = "while" ~idchar
@@ -69,7 +76,7 @@ MODE {
     return      = "return" ~idchar
     true        = "true" ~idchar
     false       = "false" ~idchar
-    keyword     = print | if | else | while | for | in | break | return | true | false | auto
+    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func
     idchar      = letter | digit | "_"
     id          = ~keyword letter idchar*
 

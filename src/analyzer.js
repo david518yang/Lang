@@ -380,7 +380,7 @@ export default function analyze(match) {
                 return paramList.asIteration().children.map((p) => p.rep())
             },
 
-            Param(id, _colon, type) {
+            Param(type, _colon, id) {
                 const param = core.variable(id.sourceString, false, type.rep())
                 mustNotAlreadyBeDeclared(param.name, { at: id })
                 context.add(param.name, param)
