@@ -1,27 +1,28 @@
 MODE {
 	Program     = Stmt+
     Stmt        = VarDecl 
+                | Assignment
                 | Print
                 | IfStmt
                 | LoopStmt
                 | BreakStmt
                 | ClassDef
                 | return ";"                            --shortReturn
-                | return Exp ";"                        --Return
+                | return Exp ";"                        --return
     
-    VarDecl     = id "=" Exp ";"                    --typeinferenceassignment
-                | id "?"                            --optionalvar
+    VarDecl     = auto id "=" Exp ";"
+    Assignment  = Primary_id "=" Exp ";"
     Print       = print Exp ";"
-    IfStmt      = if Exp Block Else?                 --ogif
-    	        | Ternary                                   --ternary
-    Else        = else IfStmt
-                | else Block
+    IfStmt      = if Exp Block else Block                 --long
+                | if Exp Block else IfStmt                --elsif
+                | if Exp Block                            --short
+                | Ternary                                 --ternary
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
     ForStmt     = for id in Exp Block
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
-    Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";" --ternary
+    Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";"
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
     ClassDef    = "class" id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
@@ -58,6 +59,7 @@ MODE {
     mut         = ~"==" "=" | "++" | "--"
 
     print       = "print" ~idchar
+    auto        = "auto" ~idchar
     if          = "if" ~idchar
     else        = "else" ~idchar
     while       = "while" ~idchar
@@ -67,7 +69,7 @@ MODE {
     return      = "return" ~idchar
     true        = "true" ~idchar
     false       = "false" ~idchar
-    keyword     = print | if | else | while | for | in | break | return | true | false
+    keyword     = print | if | else | while | for | in | break | return | true | false | auto
     idchar      = letter | digit | "_"
     id          = ~keyword letter idchar*
 
