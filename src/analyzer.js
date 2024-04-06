@@ -483,8 +483,7 @@ export default function analyze(match) {
                 throw new Error('Ternary operator not yet implemented')
             },
             
-            // Changed wording for loop statements
-            LoopStmt_WhileStmt(_while, exp, block) {
+            WhileStmt(_while, exp, block) {
                 const test = exp.rep()
                 mustHaveBooleanType(test, { at: exp })
                 context = context.newChildContext({ inLoop: true })
@@ -493,7 +492,7 @@ export default function analyze(match) {
                 return core.whileStatement(test, body)
             },
 
-            LoopStmt_ForStmt(_for, id, _in, exp, block) {
+            ForStmt(_for, id, _in, exp, block) {
                 const collection = exp.rep()
                 mustHaveAnArrayType(collection, { at: exp })
                 const iterator = core.variable(id.sourceString, true, collection.type.baseType)
@@ -502,222 +501,179 @@ export default function analyze(match) {
                 const body = block.rep()
                 context = context.parent
                 return core.forStatement(iterator, collection, body)
-            },
-
-            // This was all carlos, I think we can delete?
-            // LoopStmt_repeat(_repeat, exp, block) {
-            //     const count = exp.rep()
-            //     mustHaveIntegerType(count, { at: exp })
-            //     context = context.newChildContext({ inLoop: true })
-            //     const body = block.rep()
-            //     context = context.parent
-            //     return core.repeatStatement(count, body)
-            // },
-
-            // LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
-            //     const [low, high] = [exp1.rep(), exp2.rep()]
-            //     mustHaveIntegerType(low, { at: exp1 })
-            //     mustHaveIntegerType(high, { at: exp2 })
-            //     const iterator = core.variable(id.sourceString, INT, true)
-            //     context = context.newChildContext({ inLoop: true })
-            //     context.add(id.sourceString, iterator)
-            //     const body = block.rep()
-            //     context = context.parent
-            //     return core.forRangeStatement(
-            //         iterator,
-            //         low,
-            //         op.sourceString,
-            //         high,
-            //         body
-            //     )
-            // },
-
-            // LoopStmt_collection(_for, id, _in, exp, block) {
-            //     const collection = exp.rep()
-            //     mustHaveAnArrayType(collection, { at: exp })
-            //     const iterator = core.variable(
-            //         id.sourceString,
-            //         true,
-            //         collection.type.baseType
-            //     )
-            //     context = context.newChildContext({ inLoop: true })
-            //     context.add(iterator.name, iterator)
-            //     const body = block.rep()
-            //     context = context.parent
-            //     return core.forStatement(iterator, collection, body)
-            // },
+            }, 
 
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements
                 return statements.children.map((s) => s.rep())
             },
 
-            Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
-                const test = exp.rep()
-                mustHaveBooleanType(test, { at: exp })
-                const [consequent, alternate] = [exp1.rep(), exp2.rep()]
-                mustBothHaveTheSameType(consequent, alternate, { at: colon })
-                return core.conditional(
-                    test,
-                    consequent,
-                    alternate,
-                    consequent.type
-                )
-            },
+            // Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
+            //     const test = exp.rep()
+            //     mustHaveBooleanType(test, { at: exp })
+            //     const [consequent, alternate] = [exp1.rep(), exp2.rep()]
+            //     mustBothHaveTheSameType(consequent, alternate, { at: colon })
+            //     return core.conditional(
+            //         test,
+            //         consequent,
+            //         alternate,
+            //         consequent.type
+            //     )
+            // },
 
-            Exp1_unwrapelse(exp1, elseOp, exp2) {
-                const [optional, op, alternate] = [
-                    exp1.rep(),
-                    elseOp.sourceString,
-                    exp2.rep(),
-                ]
-                mustHaveAnOptionalType(optional, { at: exp1 })
-                mustBeAssignable(
-                    alternate,
-                    { toType: optional.type.baseType },
-                    { at: exp2 }
-                )
-                return core.binary(op, optional, alternate, optional.type)
-            },
+            // Exp1_unwrapelse(exp1, elseOp, exp2) {
+            //     const [optional, op, alternate] = [
+            //         exp1.rep(),
+            //         elseOp.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     mustHaveAnOptionalType(optional, { at: exp1 })
+            //     mustBeAssignable(
+            //         alternate,
+            //         { toType: optional.type.baseType },
+            //         { at: exp2 }
+            //     )
+            //     return core.binary(op, optional, alternate, optional.type)
+            // },
 
-            Exp2_or(exp, _ops, exps) {
-                let left = exp.rep()
-                mustHaveBooleanType(left, { at: exp })
-                for (let e of exps.children) {
-                    let right = e.rep()
-                    mustHaveBooleanType(right, { at: e })
-                    left = core.binary('||', left, right, BOOLEAN)
-                }
-                return left
-            },
+            // Exp2_or(exp, _ops, exps) {
+            //     let left = exp.rep()
+            //     mustHaveBooleanType(left, { at: exp })
+            //     for (let e of exps.children) {
+            //         let right = e.rep()
+            //         mustHaveBooleanType(right, { at: e })
+            //         left = core.binary('||', left, right, BOOLEAN)
+            //     }
+            //     return left
+            // },
 
-            Exp2_and(exp, _ops, exps) {
-                let left = exp.rep()
-                mustHaveBooleanType(left, { at: exp })
-                for (let e of exps.children) {
-                    let right = e.rep()
-                    mustHaveBooleanType(right, { at: e })
-                    left = core.binary('&&', left, right, BOOLEAN)
-                }
-                return left
-            },
+            // Exp2_and(exp, _ops, exps) {
+            //     let left = exp.rep()
+            //     mustHaveBooleanType(left, { at: exp })
+            //     for (let e of exps.children) {
+            //         let right = e.rep()
+            //         mustHaveBooleanType(right, { at: e })
+            //         left = core.binary('&&', left, right, BOOLEAN)
+            //     }
+            //     return left
+            // },
 
-            Exp3_bitor(exp, _ops, exps) {
-                let left = exp.rep()
-                mustHaveIntegerType(left, { at: exp })
-                for (let e of exps.children) {
-                    let right = e.rep()
-                    mustHaveIntegerType(right, { at: e })
-                    left = core.binary('|', left, right, INT)
-                }
-                return left
-            },
+            // Exp3_bitor(exp, _ops, exps) {
+            //     let left = exp.rep()
+            //     mustHaveIntegerType(left, { at: exp })
+            //     for (let e of exps.children) {
+            //         let right = e.rep()
+            //         mustHaveIntegerType(right, { at: e })
+            //         left = core.binary('|', left, right, INT)
+            //     }
+            //     return left
+            // },
 
-            Exp3_bitxor(exp, xorOps, exps) {
-                let left = exp.rep()
-                mustHaveIntegerType(left, { at: exp })
-                for (let e of exps.children) {
-                    let right = e.rep()
-                    mustHaveIntegerType(right, { at: e })
-                    left = core.binary('^', left, right, INT)
-                }
-                return left
-            },
+            // Exp3_bitxor(exp, xorOps, exps) {
+            //     let left = exp.rep()
+            //     mustHaveIntegerType(left, { at: exp })
+            //     for (let e of exps.children) {
+            //         let right = e.rep()
+            //         mustHaveIntegerType(right, { at: e })
+            //         left = core.binary('^', left, right, INT)
+            //     }
+            //     return left
+            // },
 
-            Exp3_bitand(exp, andOps, exps) {
-                let left = exp.rep()
-                mustHaveIntegerType(left, { at: exp })
-                for (let e of exps.children) {
-                    let right = e.rep()
-                    mustHaveIntegerType(right, { at: e })
-                    left = core.binary('&', left, right, INT)
-                }
-                return left
-            },
+            // Exp3_bitand(exp, andOps, exps) {
+            //     let left = exp.rep()
+            //     mustHaveIntegerType(left, { at: exp })
+            //     for (let e of exps.children) {
+            //         let right = e.rep()
+            //         mustHaveIntegerType(right, { at: e })
+            //         left = core.binary('&', left, right, INT)
+            //     }
+            //     return left
+            // },
 
-            Exp4_compare(exp1, relop, exp2) {
-                const [left, op, right] = [
-                    exp1.rep(),
-                    relop.sourceString,
-                    exp2.rep(),
-                ]
-                // == and != can have any operand types as long as they are the same
-                // But inequality operators can only be applied to numbers and strings
-                if (['<', '<=', '>', '>='].includes(op)) {
-                    mustHaveNumericOrStringType(left, { at: exp1 })
-                }
-                mustBothHaveTheSameType(left, right, { at: relop })
-                return core.binary(op, left, right, BOOLEAN)
-            },
+            // Exp4_compare(exp1, relop, exp2) {
+            //     const [left, op, right] = [
+            //         exp1.rep(),
+            //         relop.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     // == and != can have any operand types as long as they are the same
+            //     // But inequality operators can only be applied to numbers and strings
+            //     if (['<', '<=', '>', '>='].includes(op)) {
+            //         mustHaveNumericOrStringType(left, { at: exp1 })
+            //     }
+            //     mustBothHaveTheSameType(left, right, { at: relop })
+            //     return core.binary(op, left, right, BOOLEAN)
+            // },
 
-            Exp5_shift(exp1, shiftOp, exp2) {
-                const [left, op, right] = [
-                    exp1.rep(),
-                    shiftOp.sourceString,
-                    exp2.rep(),
-                ]
-                mustHaveIntegerType(left, { at: exp1 })
-                mustHaveIntegerType(right, { at: exp2 })
-                return core.binary(op, left, right, INT)
-            },
+            // Exp5_shift(exp1, shiftOp, exp2) {
+            //     const [left, op, right] = [
+            //         exp1.rep(),
+            //         shiftOp.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     mustHaveIntegerType(left, { at: exp1 })
+            //     mustHaveIntegerType(right, { at: exp2 })
+            //     return core.binary(op, left, right, INT)
+            // },
 
-            Exp6_add(exp1, addOp, exp2) {
-                const [left, op, right] = [
-                    exp1.rep(),
-                    addOp.sourceString,
-                    exp2.rep(),
-                ]
-                if (op === '+') {
-                    mustHaveNumericOrStringType(left, { at: exp1 })
-                } else {
-                    mustHaveNumericType(left, { at: exp1 })
-                }
-                mustBothHaveTheSameType(left, right, { at: addOp })
-                return core.binary(op, left, right, left.type)
-            },
+            // Exp6_add(exp1, addOp, exp2) {
+            //     const [left, op, right] = [
+            //         exp1.rep(),
+            //         addOp.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     if (op === '+') {
+            //         mustHaveNumericOrStringType(left, { at: exp1 })
+            //     } else {
+            //         mustHaveNumericType(left, { at: exp1 })
+            //     }
+            //     mustBothHaveTheSameType(left, right, { at: addOp })
+            //     return core.binary(op, left, right, left.type)
+            // },
 
-            Exp7_multiply(exp1, mulOp, exp2) {
-                const [left, op, right] = [
-                    exp1.rep(),
-                    mulOp.sourceString,
-                    exp2.rep(),
-                ]
-                mustHaveNumericType(left, { at: exp1 })
-                mustBothHaveTheSameType(left, right, { at: mulOp })
-                return core.binary(op, left, right, left.type)
-            },
+            // Exp7_multiply(exp1, mulOp, exp2) {
+            //     const [left, op, right] = [
+            //         exp1.rep(),
+            //         mulOp.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     mustHaveNumericType(left, { at: exp1 })
+            //     mustBothHaveTheSameType(left, right, { at: mulOp })
+            //     return core.binary(op, left, right, left.type)
+            // },
 
-            Exp8_power(exp1, powerOp, exp2) {
-                const [left, op, right] = [
-                    exp1.rep(),
-                    powerOp.sourceString,
-                    exp2.rep(),
-                ]
-                mustHaveNumericType(left, { at: exp1 })
-                mustBothHaveTheSameType(left, right, { at: powerOp })
-                return core.binary(op, left, right, left.type)
-            },
+            // Exp8_power(exp1, powerOp, exp2) {
+            //     const [left, op, right] = [
+            //         exp1.rep(),
+            //         powerOp.sourceString,
+            //         exp2.rep(),
+            //     ]
+            //     mustHaveNumericType(left, { at: exp1 })
+            //     mustBothHaveTheSameType(left, right, { at: powerOp })
+            //     return core.binary(op, left, right, left.type)
+            // },
 
-            Exp8_unary(unaryOp, exp) {
-                const [op, operand] = [unaryOp.sourceString, exp.rep()]
-                let type
-                if (op === '#') {
-                    mustHaveAnArrayType(operand, { at: exp })
-                    type = INT
-                } else if (op === '-') {
-                    mustHaveNumericType(operand, { at: exp })
-                    type = operand.type
-                } else if (op === '!') {
-                    mustHaveBooleanType(operand, { at: exp })
-                    type = BOOLEAN
-                } else if (op === 'some') {
-                    type = core.optionalType(operand.type)
-                } else if (op === 'random') {
-                    mustHaveAnArrayType(operand, { at: exp })
-                    type = operand.type.baseType
-                }
-                return core.unary(op, operand, type)
-            },
+            // Exp8_unary(unaryOp, exp) {
+            //     const [op, operand] = [unaryOp.sourceString, exp.rep()]
+            //     let type
+            //     if (op === '#') {
+            //         mustHaveAnArrayType(operand, { at: exp })
+            //         type = INT
+            //     } else if (op === '-') {
+            //         mustHaveNumericType(operand, { at: exp })
+            //         type = operand.type
+            //     } else if (op === '!') {
+            //         mustHaveBooleanType(operand, { at: exp })
+            //         type = BOOLEAN
+            //     } else if (op === 'some') {
+            //         type = core.optionalType(operand.type)
+            //     } else if (op === 'random') {
+            //         mustHaveAnArrayType(operand, { at: exp })
+            //         type = operand.type.baseType
+            //     }
+            //     return core.unary(op, operand, type)
+            // },
 
             Primary_emptyarray(ty, _open, _close) {
                 const type = ty.rep()
