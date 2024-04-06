@@ -482,8 +482,9 @@ export default function analyze(match) {
             ) {
                 throw new Error('Ternary operator not yet implemented')
             },
-
-            LoopStmt_while(_while, exp, block) {
+            
+            // Changed wording for loop statements
+            LoopStmt_WhileStmt(_while, exp, block) {
                 const test = exp.rep()
                 mustHaveBooleanType(test, { at: exp })
                 context = context.newChildContext({ inLoop: true })
@@ -492,47 +493,59 @@ export default function analyze(match) {
                 return core.whileStatement(test, body)
             },
 
-            LoopStmt_repeat(_repeat, exp, block) {
-                const count = exp.rep()
-                mustHaveIntegerType(count, { at: exp })
-                context = context.newChildContext({ inLoop: true })
-                const body = block.rep()
-                context = context.parent
-                return core.repeatStatement(count, body)
-            },
-
-            LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
-                const [low, high] = [exp1.rep(), exp2.rep()]
-                mustHaveIntegerType(low, { at: exp1 })
-                mustHaveIntegerType(high, { at: exp2 })
-                const iterator = core.variable(id.sourceString, INT, true)
-                context = context.newChildContext({ inLoop: true })
-                context.add(id.sourceString, iterator)
-                const body = block.rep()
-                context = context.parent
-                return core.forRangeStatement(
-                    iterator,
-                    low,
-                    op.sourceString,
-                    high,
-                    body
-                )
-            },
-
-            LoopStmt_collection(_for, id, _in, exp, block) {
+            LoopStmt_ForStmt(_for, id, _in, exp, block) {
                 const collection = exp.rep()
                 mustHaveAnArrayType(collection, { at: exp })
-                const iterator = core.variable(
-                    id.sourceString,
-                    true,
-                    collection.type.baseType
-                )
+                const iterator = core.variable(id.sourceString, true, collection.type.baseType)
                 context = context.newChildContext({ inLoop: true })
                 context.add(iterator.name, iterator)
                 const body = block.rep()
                 context = context.parent
                 return core.forStatement(iterator, collection, body)
             },
+
+            // This was all carlos, I think we can delete?
+            // LoopStmt_repeat(_repeat, exp, block) {
+            //     const count = exp.rep()
+            //     mustHaveIntegerType(count, { at: exp })
+            //     context = context.newChildContext({ inLoop: true })
+            //     const body = block.rep()
+            //     context = context.parent
+            //     return core.repeatStatement(count, body)
+            // },
+
+            // LoopStmt_range(_for, id, _in, exp1, op, exp2, block) {
+            //     const [low, high] = [exp1.rep(), exp2.rep()]
+            //     mustHaveIntegerType(low, { at: exp1 })
+            //     mustHaveIntegerType(high, { at: exp2 })
+            //     const iterator = core.variable(id.sourceString, INT, true)
+            //     context = context.newChildContext({ inLoop: true })
+            //     context.add(id.sourceString, iterator)
+            //     const body = block.rep()
+            //     context = context.parent
+            //     return core.forRangeStatement(
+            //         iterator,
+            //         low,
+            //         op.sourceString,
+            //         high,
+            //         body
+            //     )
+            // },
+
+            // LoopStmt_collection(_for, id, _in, exp, block) {
+            //     const collection = exp.rep()
+            //     mustHaveAnArrayType(collection, { at: exp })
+            //     const iterator = core.variable(
+            //         id.sourceString,
+            //         true,
+            //         collection.type.baseType
+            //     )
+            //     context = context.newChildContext({ inLoop: true })
+            //     context.add(iterator.name, iterator)
+            //     const body = block.rep()
+            //     context = context.parent
+            //     return core.forStatement(iterator, collection, body)
+            // },
 
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements
