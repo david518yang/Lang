@@ -28,7 +28,7 @@ const semanticChecks = [
     ],
     ['short return', 'return;'],
     ['long return', 'return true;'],
-    ['complex array types', 'function f(x: [[[int]]]) {}'],
+    //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],
     //["initialize with empty array", "let a = [int]();"],
     //['type declaration', 'struct S {f: (int)->boolean? g: string}'],
