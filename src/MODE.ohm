@@ -8,10 +8,11 @@ MODE {
                 | LoopStmt
                 | BreakStmt
                 | ClassDef
-                | return ";"                            --shortReturn
+                | return ";"                            --shortreturn
                 | return Exp ";"                        --return
     
-    VarDecl     = auto id "=" Exp ";"
+    VarDecl     = auto id "=" Exp ";"                   --inference
+                | Type id "=" Exp ";"                  --type
     Assignment  = Primary_id "=" Exp ";"
     Print       = print Exp ";"
     IfStmt      = if Exp Block else Block                 --long
@@ -20,11 +21,11 @@ MODE {
                 | Ternary                                 --ternary
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
-    ForStmt     = for id in Exp Block
-                       | for id in Range Block
+    ForStmt     = for id in Exp Block               --iterable
+                | for id in Range Block             --range
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
-    Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";"
+    Ternary     = if "(" Exp ")" yield Exp otherwise Exp ";"
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
     ClassDef    = "class" id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
@@ -32,11 +33,9 @@ MODE {
   	Params      = "(" ListOf<Param, ","> ")"
  	Param       = id ":" Type
     
-    Type        = Type "?"                          --optional
-                | Type "[]"                         --arr
-                | Lambda                            --lambda
-                | id                                --classtype
-    Range = digit ".." digit
+    Type        = Type "[" "]"                         --arr
+                | types                                --primitive
+    Range       = digit ".." digit
     Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term             --binary
@@ -47,12 +46,14 @@ MODE {
                 | "-" Primary                       --negation
                 | Primary
     Primary     = id "(" ListOf<Exp, ","> ")"       --call
-                | float                           --num
+                | float                             --num
                 | id                                --id
                 | string ~mut                       --string
                 | true ~mut                         --true
                 | false ~mut                        --false
                 | "(" Exp ")"                       --parens
+                | Type_arr "(" ")" ~mut                    --emptyarray
+                | "[" NonemptyListOf<Exp, ","> "]" ~mut      --arrayexp
     
     relop       = "<=" | "<" | "==" | "!=" | ">=" | ">"
     float       = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
@@ -66,7 +67,7 @@ MODE {
 
     print       = "print" ~idchar
     auto        = "auto" ~idchar
-    func    = "func" ~idchar
+    func        = "func" ~idchar
     if          = "if" ~idchar
     else        = "else" ~idchar
     while       = "while" ~idchar
@@ -75,8 +76,12 @@ MODE {
     break       = "break" ~idchar
     return      = "return" ~idchar
     true        = "true" ~idchar
+    yield       = "yield" ~idchar
+    otherwise   = "otherwise" ~idchar
     false       = "false" ~idchar
-    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func
+    types       = ("int" | "float" | "bool" | "string") ~idchar
+    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | types | yield | otherwise
+                | types
     idchar      = letter | digit | "_"
     id          = ~keyword letter idchar*
 

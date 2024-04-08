@@ -306,7 +306,18 @@ export default function analyze(match) {
                 return core.program(statements.children.map((s) => s.rep()))
             },
 
-            VarDecl(_auto, id, _eq, exp, _semicolon) {
+            VarDecl_inference(_auto, id, _eq, exp, _semicolon) {
+                const initializer = exp.rep()
+                const variable = core.variable(
+                    id.sourceString,
+                    initializer.type
+                )
+                mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+                context.add(id.sourceString, variable)
+                return core.variableDeclaration(variable, initializer)
+            },
+
+            VarDecl_type(_Type, id, _eq, exp, _semicolon) {
                 const initializer = exp.rep()
                 const variable = core.variable(
                     id.sourceString,
@@ -346,7 +357,7 @@ export default function analyze(match) {
                 return core.field(id.sourceString, type.rep())
             },
 
-            FunDecl(_fun, id, parameters, _colons, type, block) {
+            FunDecl(_func, id, parameters, _colons, type, block) {
                 // Start by making the function, but we don't yet know its type.
                 // Also add it to the context so that we can have recursion.
                 const fun = core.fun(id.sourceString)
@@ -380,39 +391,46 @@ export default function analyze(match) {
                 return paramList.asIteration().children.map((p) => p.rep())
             },
 
-            Param(type, _colon, id) {
+            Param(id, _colon, type) {
                 const param = core.variable(id.sourceString, false, type.rep())
                 mustNotAlreadyBeDeclared(param.name, { at: id })
                 context.add(param.name, param)
                 return param
             },
 
-            Type_optional(baseType, _questionMark) {
-                return core.optionalType(baseType.rep())
-            },
+            // Type_optional(baseType, _questionMark) {
+            //     return core.optionalType(baseType.rep())
+            // },
 
-            Type_array(_left, baseType, _right) {
+            Type_arr(baseType, _left, _right) {
                 return core.arrayType(baseType.rep())
             },
 
-            Type_function(_left, types, _right, _arrow, type) {
-                const paramTypes = types
-                    .asIteration()
-                    .children.map((t) => t.rep())
-                const returnType = type.rep()
-                return core.functionType(paramTypes, returnType)
-            },
+            // Type_lambda(_left, params, _right, _arrow, returnType) {
+            //     const paramTypes = params
+            //         .asIteration()
+            //         .children.map((p) => p.rep())
+            //     const returnTypeType = returnType.rep()
+            //     return core.functionType(paramTypes, returnTypeType)
+            // },
 
-            Type_id(id) {
-                const entity = context.lookup(id.sourceString)
-                mustHaveBeenFound(entity, id.sourceString, { at: id })
-                mustBeAType(entity, { at: id })
-                return entity
-            },
+            // Type_function(_left, types, _right, _arrow, type) {
+            //     const paramTypes = types
+            //         .asIteration()
+            //         .children.map((t) => t.rep())
+            //     const returnType = type.rep()
+            //     return core.functionType(paramTypes, returnType)
+            // },
+            // Type_classtype(id) {
+            //     const entity = context.lookup(id.sourceString)
+            //     mustHaveBeenFound(entity, id.sourceString, { at: id })
+            //     mustBeAType(entity, { at: id })
+            //     return entity
+            // },
 
-            Statement_call(call, _semicolon) {
-                return call.rep()
-            },
+            // Statement_call(call, _semicolon) {
+            //     return call.rep()
+            // },
 
             BreakStmt(breakKeyword, _semicolon) {
                 mustBeInLoop({ at: breakKeyword })
@@ -434,7 +452,7 @@ export default function analyze(match) {
             Stmt_shortreturn(returnKeyword, _semicolon) {
                 mustBeInAFunction({ at: returnKeyword })
                 mustNotReturnAnything(context.function, { at: returnKeyword })
-                return core.shortReturnStatement()
+                return core.shortreturnStatement()
             },
 
             IfStmt_long(_if, exp, block1, _else, block2) {
@@ -482,7 +500,7 @@ export default function analyze(match) {
             ) {
                 throw new Error('Ternary operator not yet implemented')
             },
-            
+
             WhileStmt(_while, exp, block) {
                 const test = exp.rep()
                 mustHaveBooleanType(test, { at: exp })
@@ -492,23 +510,40 @@ export default function analyze(match) {
                 return core.whileStatement(test, body)
             },
 
-            ForStmt(_for, id, _in, exp, block) {
+            ForStmt_iterable(_for, id, _in, exp, block) {
                 const collection = exp.rep()
                 mustHaveAnArrayType(collection, { at: exp })
-                const iterator = core.variable(id.sourceString, true, collection.type.baseType)
+                const iterator = core.variable(
+                    id.sourceString,
+                    true,
+                    collection.type.baseType
+                )
                 context = context.newChildContext({ inLoop: true })
                 context.add(iterator.name, iterator)
                 const body = block.rep()
                 context = context.parent
                 return core.forStatement(iterator, collection, body)
-            }, 
+            },
+
+            ForStmt_range(_for, id, _in, exp, block) {
+                const collection = exp.rep()
+                mustHaveAnArrayType(collection, { at: exp })
+                const iterator = core.variable(
+                    id.sourceString,
+                    true,
+                    collection.type.baseType
+                )
+                context = context.newChildContext({ inLoop: true })
+                context.add(iterator.name, iterator)
+                const body = block.rep()
+                context = context.parent
+                return core.forStatement(iterator, collection, body)
+            },
 
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements
                 return statements.children.map((s) => s.rep())
             },
-            
-
 
             // Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
             //     const test = exp.rep()
@@ -689,37 +724,37 @@ export default function analyze(match) {
                 return core.arrayExpression(elements)
             },
 
-            Primary_emptyopt(_no, type) {
-                return core.emptyOptional(type.rep())
-            },
+            // Primary_emptyopt(_no, type) {
+            //     return core.emptyOptional(type.rep())
+            // },
 
             Primary_parens(_open, expression, _close) {
                 return expression.rep()
             },
 
-            Primary_subscript(exp1, _open, exp2, _close) {
-                const [array, subscript] = [exp1.rep(), exp2.rep()]
-                mustHaveAnArrayType(array, { at: exp1 })
-                mustHaveIntegerType(subscript, { at: exp2 })
-                return core.subscript(array, subscript)
-            },
+            // Primary_subscript(exp1, _open, exp2, _close) {
+            //     const [array, subscript] = [exp1.rep(), exp2.rep()]
+            //     mustHaveAnArrayType(array, { at: exp1 })
+            //     mustHaveIntegerType(subscript, { at: exp2 })
+            //     return core.subscript(array, subscript)
+            // },
 
-            Primary_member(exp, dot, id) {
-                const object = exp.rep()
-                let structType
-                if (dot.sourceString === '?.') {
-                    mustHaveAnOptionalStructType(object, { at: exp })
-                    structType = object.type.baseType
-                } else {
-                    mustHaveAStructType(object, { at: exp })
-                    structType = object.type
-                }
-                mustHaveMember(structType, id.sourceString, { at: id })
-                const field = structType.fields.find(
-                    (f) => f.name === id.sourceString
-                )
-                return core.memberExpression(object, dot.sourceString, field)
-            },
+            // Primary_member(exp, dot, id) {
+            //     const object = exp.rep()
+            //     let structType
+            //     if (dot.sourceString === '?.') {
+            //         mustHaveAnOptionalStructType(object, { at: exp })
+            //         structType = object.type.baseType
+            //     } else {
+            //         mustHaveAStructType(object, { at: exp })
+            //         structType = object.type
+            //     }
+            //     mustHaveMember(structType, id.sourceString, { at: id })
+            //     const field = structType.fields.find(
+            //         (f) => f.name === id.sourceString
+            //     )
+            //     return core.memberExpression(object, dot.sourceString, field)
+            // },
 
             Primary_call(exp, open, expList, _close) {
                 const callee = exp.rep()

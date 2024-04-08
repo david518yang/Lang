@@ -59,8 +59,16 @@ export function returnStatement(expression) {
     return { kind: 'ReturnStatement', expression }
 }
 
+export function shortreturnStatement() {
+    return { kind: 'shortreturnStatement' }
+}
+
 export function ifStatement(test, consequent, alternate) {
     return { kind: 'IfStatement', test, consequent, alternate }
+}
+
+export function shortIfStatement(test, consequent) {
+    return { kind: 'ShortIfStatement', test, consequent }
 }
 
 export function whileStatement(test, body) {

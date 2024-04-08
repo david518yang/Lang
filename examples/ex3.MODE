@@ -1,0 +1,19 @@
+// vardecls
+auto y = 5;
+auto str = "hello";
+auto boolVar = false;
+auto pi = 3.14;
+auto emptyArr = int[]();
+auto numArr = [1,2,3];
+
+// assignment
+y = 2;
+boolVar = true;
+numArr = int[]()
+
+print y
+print boolVar
+
+if y<5 {
+    
+}
