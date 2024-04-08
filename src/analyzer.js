@@ -796,6 +796,12 @@ export default function analyze(match) {
                 return false
             },
 
+            int() {
+                return core.intType
+            },
+
+            
+
             float(_whole, _point, _fraction, _e, _sign, _exponent) {
                 // Carlos floats will be represented as plain JS numbers
                 return Number(this.sourceString)
