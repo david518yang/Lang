@@ -433,9 +433,9 @@ export default function analyze(match) {
             //     return entity
             // },
 
-            // Statement_call(call, _semicolon) {
-            //     return call.rep()
-            // },
+            Stmt_call(call, _semicolon) {
+                return call.rep()
+            },
 
             BreakStmt(breakKeyword, _semicolon) {
                 mustBeInLoop({ at: breakKeyword })
@@ -530,20 +530,17 @@ export default function analyze(match) {
                 return core.forStatement(iterator, collection, body)
             },
 
-            ForStmt_range(_for, id, _in, exp, block) {
-                const collection = exp.rep()
-                mustHaveAnArrayType(collection, { at: exp })
-                const iterator = core.variable(
-                    id.sourceString,
-                    true,
-                    collection.type.baseType
-                )
+            ForStmt_range(_for, id, _in, exp1, op, exp2, block) {
+                const [low, high] = [exp1.rep(), exp2.rep()]
+                mustHaveIntegerType(low, { at: exp1 })
+                mustHaveIntegerType(high, { at: exp2 })
+                const iterator = core.variable(id.sourceString, INT, true)
                 context = context.newChildContext({ inLoop: true })
-                context.add(iterator.name, iterator)
+                context.add(id.sourceString, iterator)
                 const body = block.rep()
                 context = context.parent
-                return core.forStatement(iterator, collection, body)
-            },
+                return core.forRangeStatement(iterator, low, op.sourceString, high, body)
+              },
 
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements

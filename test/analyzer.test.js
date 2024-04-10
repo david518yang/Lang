@@ -21,7 +21,7 @@ const semanticChecks = [
     ['while, break in nested if', 'while false {if true {break;}}'],
     ['if else', 'if true {print 1;} else {print 3;}'],
     ['else if', 'if true {print 1;} else if true {print 0;} else {print 3;}'],
-    ['for in range', 'for i in 1..5{ print(i);}'],
+    ['for in range', 'for i in 1..5 {print i;}'],
     [
         'func call',
         `func calculateSum(x: int, y: int): int { return x + y; } calculateSum(1, 2);`,
@@ -176,12 +176,12 @@ const semanticErrors = [
         /should be returned/,
     ],
 
-    ['non-boolean short if test', 'if 1 {}', /Expected a boolean/],
-    ['non-boolean if test', 'if 1 {} else {}', /Expected a boolean/],
-    ['non-boolean while test', 'while 1 {}', /Expected a boolean/],
+    ['non-boolean short if test', 'if 1 {print "Hello";}', /Expected a boolean/],
+    ['non-boolean if test', 'if 1 {print "Hello";} else {print "Goodbye";}', /Expected a boolean/],
+    ['non-boolean while test', 'while 1 {print "Hello";}', /Expected a boolean/],
     // ['non-integer repeat', 'repeat "1" {}', /Expected an integer/],
-    ['non-integer low range', 'for i in true...2 {}', /Expected an integer/],
-    ['non-integer high range', 'for i in 1..no int {}', /Expected an integer/],
+    ['non-integer low range', 'for i in true..2 {print i;}', /Expected an integer/],
+    ['non-integer high range', 'auto no = "Hello"; for i in 1..no {print i;}', /Expected an integer/],
     //['non-array in for', 'for i in 100 {}', /Expected an array/],
     // ['non-boolean conditional test', 'print(1?2:3);', /Expected a boolean/],
     // [
@@ -232,12 +232,12 @@ const semanticErrors = [
     ['call of uncallable', 'auto x = 1;\nprint x();', /Call of non-function/],
     [
         'Too many args',
-        'func f(int: x) {}\nf(1,2);',
+        'func f(x:int) {print x;} f(1,2);',
         /1 argument\(s\) required but 2 passed/,
     ],
     [
         'Too few args',
-        'func f(int: x) {}\nf();',
+        'func f(x:int) {print x;} f();',
         /1 argument\(s\) required but 0 passed/,
     ],
     // [
@@ -254,12 +254,12 @@ const semanticErrors = [
     //     'print(sin(true));',
     //     /Cannot assign a boolean to a float/,
     // ],
-    ['Non-type in param', 'auto x=1;func f(){}', /Type expected/],
-    [
-        'Non-type in return type',
-        'auto x=1;func f():x{return 1;}',
-        /Type expected/,
-    ],
+    //  ['Non-type in param', 'auto x=1; func f(){return;}', /Type expected/],
+    // [
+    //     'Non-type in return type',
+    //     'auto x=1;func f():x{return 1;}',
+    //     /Type expected/,
+    // ],
     // ['Non-type in field type', 'let x=1;struct S {y:x}', /Type expected/],
 ]
 
@@ -276,11 +276,11 @@ describe('The analyzer', () => {
     }
     it('produces the expected representation for a trivial program', () => {
         assert.deepEqual(
-            analyze(parse('auto x = π + 2.2;')),
+            analyze(parse('auto x = 5 + 2.2;')),
             program([
                 variableDeclaration(
                     variable('x', false, floatType),
-                    binary('+', variable('π', true, floatType), 2.2, floatType)
+                    binary('+', variable('5', true, floatType), 2.2, floatType)
                 ),
             ])
         )

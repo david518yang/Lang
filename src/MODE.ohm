@@ -23,7 +23,7 @@ MODE {
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
     ForStmt     = for id in Exp Block               --iterable
-                | for id in Range Block             --range
+                | for id in Exp ".." Exp Block             --range
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" yield Exp otherwise Exp ";"
@@ -35,8 +35,7 @@ MODE {
  	Param       = id ":" Type
     
     Type        = Type "[" "]"                         --arr
-                | primitivetype                                --primitive
-    Range       = digit ".." digit
+                | types                                --primitive
     Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term             --binary
@@ -85,13 +84,12 @@ MODE {
     floatkeyword = "float" ~idchar
     boolkeyword = "bool" ~idchar
     stringkeyword = "string" ~idchar
-    primitivetype  = intkeyword | floatkeyword | boolkeyword | stringkeyword
-    keyword        = print | if | else | while | for | in | break | return
-                   | true | false | auto | func | primitivetype | yield 
-                   | otherwise
-    idchar         = letter | digit | "_"
-    id             = ~keyword letter idchar*
+    types       = intkeyword | floatkeyword | boolkeyword | stringkeyword
+    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | types | yield | otherwise
+                | types
+    idchar      = letter | digit | "_"
+    id          = ~keyword letter idchar*
 
-    space         += "//" (~"\n" any)*               --comment
+    space       += "//" (~"\n" any)*               --comment
     
 }
