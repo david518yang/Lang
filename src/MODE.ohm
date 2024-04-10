@@ -35,7 +35,7 @@ MODE {
  	Param       = id ":" Type
     
     Type        = Type "[" "]"                         --arr
-                | types                                --primitive
+                | primitivetype                                --primitive
     Range       = digit ".." digit
     Exp         = Exp1 relop Exp1                   --comparison
                 | Exp1
@@ -85,12 +85,13 @@ MODE {
     floatkeyword = "float" ~idchar
     boolkeyword = "bool" ~idchar
     stringkeyword = "string" ~idchar
-    types       = intkeyword | floatkeyword | boolkeyword | stringkeyword
-    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | types | yield | otherwise
-                | types
-    idchar      = letter | digit | "_"
-    id          = ~keyword letter idchar*
+    primitivetype  = intkeyword | floatkeyword | boolkeyword | stringkeyword
+    keyword        = print | if | else | while | for | in | break | return
+                   | true | false | auto | func | primitivetype | yield 
+                   | otherwise
+    idchar         = letter | digit | "_"
+    id             = ~keyword letter idchar*
 
-    space       += "//" (~"\n" any)*               --comment
+    space         += "//" (~"\n" any)*               --comment
     
 }

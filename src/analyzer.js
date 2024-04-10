@@ -305,7 +305,7 @@ export default function analyze(match) {
             Program(statements) {
                 return core.program(statements.children.map((s) => s.rep()))
             },
-            
+
             //are there any differences we need to make in the inference vs type
             VarDecl_inference(_auto, id, _eq, exp, _semicolon) {
                 const initializer = exp.rep()
@@ -338,6 +338,10 @@ export default function analyze(match) {
                 //     { at: variable }
                 // )
                 return core.assignment(target, source)
+            },
+
+            Print(_print, exp, _semicolon) {
+                return core.printStatement(exp.rep())
             },
 
             // Eventually use ClassDef
@@ -544,6 +548,17 @@ export default function analyze(match) {
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements
                 return statements.children.map((s) => s.rep())
+            },
+
+            Exp1_binary(exp1, op, exp2) {
+                const [left, operator, right] = [
+                    exp1.rep(),
+                    op.sourceString,
+                    exp2.rep(),
+                ]
+                mustHaveNumericOrStringType(left, { at: exp1 })
+                mustBothHaveTheSameType(left, right, { at: op })
+                return core.binary(operator, left, right, left.type)
             },
 
             // Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
@@ -797,16 +812,29 @@ export default function analyze(match) {
                 return false
             },
 
-            int() {
-                // why does carlos use bigint, should we use intType?
-                // also do we need to include _digits in params
+            intkeyword(_) {
                 return core.intType
             },
 
-            
+            floatkeyword(_) {
+                return core.floatType
+            },
+
+            stringkeyword(_) {
+                return core.stringType
+            },
+
+            boolkeyword(_) {
+                return core.boolType
+            },
+
+            int(_digits) {
+                // MODE ints will be represented as JS BigInts
+                return BigInt(this.sourceString)
+            },
 
             float(_whole, _point, _fraction, _e, _sign, _exponent) {
-                // Carlos floats will be represented as plain JS numbers
+                // MODE floats will be represented as plain JS numbers
                 return Number(this.sourceString)
             },
 
