@@ -305,7 +305,8 @@ export default function analyze(match) {
             Program(statements) {
                 return core.program(statements.children.map((s) => s.rep()))
             },
-
+            
+            //are there any differences we need to make in the inference vs type
             VarDecl_inference(_auto, id, _eq, exp, _semicolon) {
                 const initializer = exp.rep()
                 const variable = core.variable(
@@ -797,6 +798,8 @@ export default function analyze(match) {
             },
 
             int() {
+                // why does carlos use bigint, should we use intType?
+                // also do we need to include _digits in params
                 return core.intType
             },
 

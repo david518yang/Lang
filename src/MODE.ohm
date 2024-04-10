@@ -3,6 +3,7 @@ MODE {
     Stmt        = VarDecl 
                 | Assignment
                 | FunDecl
+                | Primary_call ";"                                 --call
                 | Print
                 | IfStmt
                 | LoopStmt
@@ -45,7 +46,7 @@ MODE {
     Factor      = Primary "**" Factor               --binary
                 | "-" Primary                       --negation
                 | Primary
-    Primary     = id "(" ListOf<Exp, ","> ")"       --call
+    Primary     = id "(" ListOf<Exp, ","> ")"      --call
                 | float                             --num
                 | id                                --id
                 | string ~mut                       --string
@@ -56,7 +57,8 @@ MODE {
                 | "[" NonemptyListOf<Exp, ","> "]" ~mut      --arrayexp
     
     relop       = "<=" | "<" | "==" | "!=" | ">=" | ">"
-    float       = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+    int         = digit+
+    float        = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
     string		= "\"" char* "\""
     char		= ~"\\" ~"\"" any							--normalchars
     			| "\\" ("'" | "\"" | "n" | "\\") 			--escape
@@ -79,7 +81,11 @@ MODE {
     yield       = "yield" ~idchar
     otherwise   = "otherwise" ~idchar
     false       = "false" ~idchar
-    types       = ("int" | "float" | "bool" | "string") ~idchar
+    intkeyword  = "int" ~idchar
+    floatkeyword = "float" ~idchar
+    boolkeyword = "bool" ~idchar
+    stringkeyword = "string" ~idchar
+    types       = intkeyword | floatkeyword | boolkeyword | stringkeyword
     keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | types | yield | otherwise
                 | types
     idchar      = letter | digit | "_"

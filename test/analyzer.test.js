@@ -24,7 +24,7 @@ const semanticChecks = [
     ['for in range', 'for i in 1..5{ print(i);}'],
     [
         'func call',
-        `func calculateSum(x: int, y: int): int { return x + y; } calculateSum = (1, 2);`,
+        `func calculateSum(x: int, y: int): int { return x + y; } calculateSum(1, 2);`,
     ],
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
