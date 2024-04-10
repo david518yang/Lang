@@ -123,7 +123,7 @@ const semanticErrors = [
     ],
     [
         'func param type matching',
-        `func wrongParam(string: theParam){ return; } wrongParam(90);`,
+        `func wrongParam(theParam:string){ return; } wrongParam(90);`,
         /Parameter type mismatch/,
     ],
     [
