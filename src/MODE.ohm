@@ -45,7 +45,7 @@ MODE {
     Factor      = Primary "**" Factor               --binary
                 | "-" Primary                       --negation
                 | Primary
-    Primary     = id "(" ListOf<Exp, ","> ")"      --call
+    Primary     = Primary_id "(" ListOf<Exp, ","> ")"      --call
                 | float                             --num
                 | int                               --int
                 | id                                --id

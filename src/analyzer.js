@@ -397,7 +397,8 @@ export default function analyze(match) {
             },
 
             Param(id, _colon, type) {
-                const param = core.variable(id.sourceString, false, type.rep())
+                const param = core.variable(id.sourceString, type.rep())
+                console.log(param)
                 mustNotAlreadyBeDeclared(param.name, { at: id })
                 context.add(param.name, param)
                 return param
