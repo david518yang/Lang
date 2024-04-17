@@ -98,7 +98,7 @@ export default function analyze(match) {
 
     function mustHaveIntegerType(e, at) {
         must(e.type === INT, 'Expected an integer', at)
-    }
+    } 
 
     function mustHaveAnArrayType(e, at) {
         must(e.type?.kind === 'ArrayType', 'Expected an array', at)

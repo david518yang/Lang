@@ -119,3 +119,4 @@ export const standardLibrary = Object.freeze({
 String.prototype.type = stringType
 Number.prototype.type = floatType
 Boolean.prototype.type = boolType
+BigInt.prototype.type = intType

@@ -47,6 +47,7 @@ MODE {
                 | Primary
     Primary     = id "(" ListOf<Exp, ","> ")"      --call
                 | float                             --num
+                | int                               --int
                 | id                                --id
                 | string ~mut                       --string
                 | true ~mut                         --true
