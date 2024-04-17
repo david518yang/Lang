@@ -7,6 +7,7 @@ import {
     variable,
     binary,
     floatType,
+    intType
 } from '../src/core.js'
 
 // Programs that are semantically correct
@@ -276,11 +277,11 @@ describe('The analyzer', () => {
     }
     it('produces the expected representation for a trivial program', () => {
         assert.deepEqual(
-            analyze(parse('auto x = 5 + 2.2;')),
+            analyze(parse('auto x = 5 + 2;')),
             program([
                 variableDeclaration(
-                    variable('x', false, floatType),
-                    binary('+', variable('5', true, floatType), 2.2, floatType)
+                    variable('x', false, intType),
+                    binary('+', variable('5', true, intType), 2, intType)
                 ),
             ])
         )
