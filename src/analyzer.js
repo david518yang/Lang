@@ -532,8 +532,6 @@ export default function analyze(match) {
 
             ForStmt_range(_for, id, _in, exp1, op, exp2, block) {
                 const [low, high] = [exp1.rep(), exp2.rep()]
-                console.log(low)
-                console.log(low.type)
                 mustHaveIntegerType(low, { at: exp1 })
                 mustHaveIntegerType(high, { at: exp2 })
                 const iterator = core.variable(id.sourceString, INT, true)
