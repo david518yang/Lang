@@ -1,18 +1,27 @@
-import * as ohm from 'ohm-js'
-import fs from 'fs';
+import * as fs from 'node:fs/promises'
+import stringify from 'graph-stringify'
+import compile from './compiler.js'
 
-const fileName = process.argv[2];
+const help = `Carlos compiler
 
-if (!fileName) {
-    console.error('Usage: node src/MODE.js filename');
-    process.exit(1);
+Syntax: carlos <filename> <outputType>
+
+Prints to stdout according to <outputType>, which must be one of:
+
+  parsed     a message that the program was matched ok by the grammar
+  analyzed   the statically analyzed representation
+  optimized  the optimized semantically analyzed representation
+  js         the translation to JavaScript
+`
+
+async function compileFromFile(filename, outputType) {
+    const buffer = await fs.readFile(filename)
+    const compiled = compile(buffer.toString(), outputType)
+    console.log(stringify(compiled, 'kind') || compiled)
 }
 
-try {
-    const fileContent = fs.readFileSync('./src/MODE.ohm', 'utf8');
-    const grammar = ohm.grammar(fileContent);
-    console.log('Syntax is okay');
-} catch (error) {
-    console.error('Error:', error.message);
-    process.exit(1);
+if (process.argv.length !== 4) {
+    console.log(help)
+} else {
+    compileFromFile(process.argv[2], process.argv[3])
 }

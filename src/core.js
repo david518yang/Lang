@@ -55,6 +55,10 @@ export function assignment(target, source) {
 
 export const breakStatement = { kind: 'BreakStatement' }
 
+export function forRangeStatement(variable, start, end, body) {
+    return { kind: 'ForRangeStatement', variable, start, end, body }
+}
+
 export function returnStatement(expression) {
     return { kind: 'ReturnStatement', expression }
 }

@@ -58,7 +58,7 @@ MODE {
     
     relop       = "<=" | "<" | "==" | "!=" | ">=" | ">"
     int         = digit+
-    float        = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+    float        = digit+ ("." digit+) (("E" | "e") ("+" | "-")? digit+)?
     string		= "\"" char* "\""
     char		= ~"\\" ~"\"" any							--normalchars
     			| "\\" ("'" | "\"" | "n" | "\\") 			--escape

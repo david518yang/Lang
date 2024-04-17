@@ -98,7 +98,7 @@ export default function analyze(match) {
 
     function mustHaveIntegerType(e, at) {
         must(e.type === INT, 'Expected an integer', at)
-    } 
+    }
 
     function mustHaveAnArrayType(e, at) {
         must(e.type?.kind === 'ArrayType', 'Expected an array', at)
@@ -532,6 +532,8 @@ export default function analyze(match) {
 
             ForStmt_range(_for, id, _in, exp1, op, exp2, block) {
                 const [low, high] = [exp1.rep(), exp2.rep()]
+                console.log(low)
+                console.log(low.type)
                 mustHaveIntegerType(low, { at: exp1 })
                 mustHaveIntegerType(high, { at: exp2 })
                 const iterator = core.variable(id.sourceString, INT, true)
@@ -539,8 +541,8 @@ export default function analyze(match) {
                 context.add(id.sourceString, iterator)
                 const body = block.rep()
                 context = context.parent
-                return core.forRangeStatement(iterator, low, op.sourceString, high, body)
-              },
+                return core.forRangeStatement(iterator, low, high, body)
+            },
 
             Block(_open, statements, _close) {
                 // No need for a block node, just return the list of statements
