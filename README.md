@@ -13,7 +13,6 @@ developers will enter a new realm of possibilites where the boundaries of coding
 ## Features
 
 - Type inference
-- Classes
 - String interpolation
 - Lambda functions
 - Optional variables
