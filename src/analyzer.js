@@ -332,11 +332,11 @@ export default function analyze(match) {
             Assignment(variable, _eq, expression, _semicolon) {
                 const source = expression.rep()
                 const target = variable.rep()
-                // mustBeAssignable(
-                //     source,
-                //     { toType: target.type },
-                //     { at: variable }
-                // )
+                mustBeAssignable(
+                    source,
+                    { toType: target.type },
+                    { at: variable }
+                )
                 return core.assignment(target, source)
             },
 

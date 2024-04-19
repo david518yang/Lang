@@ -30,8 +30,6 @@ const semanticChecks = [
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
-    ['short return', 'return;'],
-    ['long return', 'return true;'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],
     //["initialize with empty array", "let a = [int]();"],
@@ -114,23 +112,23 @@ const semanticChecks = [
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-    ['type mismatch', `auto x = "hello"; x = 5;`, /Type mismatch/],
-    ['undeclared ids', `print(x);`, /Identifier not declared/],
-    ['break outside of loop', `break;`, /Break not in loop/],
+    ['type mismatch', `auto x = "hello"; x = 5;`, /Cannot assign a int to a string/],
+    ['undeclared ids', `print(x);`, /Identifier x not declared/],
+    ['break outside of loop', `break;`, /Break can only appear in a loop/],
     [
         'func return type matching',
         `func wrongReturn(): int { return "not an int"; }`,
-        /Return type mismatch/,
+        /Cannot assign a string to a int/,
     ],
     [
         'func param type matching',
         `func wrongParam(theParam:string){ return; } wrongParam(90);`,
-        /Parameter type mismatch/,
+        /Cannot assign a int to a string/,
     ],
     [
         'duplicate ids',
         `auto x = 10; auto x = 20;`,
-        /Identifier already declared/,
+        /Identifier x already declared/,
     ],
 
     // [
@@ -280,8 +278,8 @@ describe('The analyzer', () => {
             analyze(parse('auto x = 5 + 2;')),
             program([
                 variableDeclaration(
-                    variable('x', false, intType),
-                    binary('+', variable('5', true, intType), 2, intType)
+                    variable('x', intType),
+                    binary('+', 5n, 2n, intType)
                 ),
             ])
         )
