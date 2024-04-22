@@ -398,7 +398,6 @@ export default function analyze(match) {
 
             Param(id, _colon, type) {
                 const param = core.variable(id.sourceString, type.rep())
-                console.log(param)
                 mustNotAlreadyBeDeclared(param.name, { at: id })
                 context.add(param.name, param)
                 return param
@@ -557,6 +556,32 @@ export default function analyze(match) {
                 mustHaveNumericOrStringType(left, { at: exp1 })
                 mustBothHaveTheSameType(left, right, { at: op })
                 return core.binary(operator, left, right, left.type)
+            },
+
+            Exp_comparison(exp1, relop, exp2) {
+                const [left, op, right] = [
+                    exp1.rep(),
+                    relop.sourceString,
+                    exp2.rep(),
+                ]
+                // == and != can have any operand types as long as they are the same
+                // But inequality operators can only be applied to numbers and strings
+                if (['<', '<=', '>', '>='].includes(op)) {
+                    mustHaveNumericOrStringType(left, { at: exp1 })
+                }
+                mustBothHaveTheSameType(left, right, { at: relop })
+                return core.binary(op, left, right, BOOLEAN)
+            },
+
+            Term_binary(exp1, mulOp, exp2) {
+                const [left, op, right] = [
+                    exp1.rep(),
+                    mulOp.sourceString,
+                    exp2.rep(),
+                ]
+                mustHaveNumericType(left, { at: exp1 })
+                mustBothHaveTheSameType(left, right, { at: mulOp })
+                return core.binary(op, left, right, left.type)
             },
 
             // Exp_conditional(exp, _questionMark, exp1, colon, exp2) {

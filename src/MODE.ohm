@@ -28,7 +28,7 @@ MODE {
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" yield Exp otherwise Exp ";"
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
-    ClassDef    = "class" id "{" Field* "}"         --classdef
+    ClassDef    = class id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
     FunDecl     = func id Params (":" Type)? Block
   	Params      = "(" ListOf<Param, ","> ")"
@@ -77,6 +77,7 @@ MODE {
     in          = "in" ~idchar
     break       = "break" ~idchar
     return      = "return" ~idchar
+    class       = "class" ~idchar
     true        = "true" ~idchar
     yield       = "yield" ~idchar
     otherwise   = "otherwise" ~idchar
@@ -86,7 +87,7 @@ MODE {
     boolkeyword = "bool" ~idchar
     stringkeyword = "string" ~idchar
     types       = intkeyword | floatkeyword | boolkeyword | stringkeyword
-    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | types | yield | otherwise
+    keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | class | yield | otherwise
                 | types
     idchar      = letter | digit | "_"
     id          = ~keyword letter idchar*
