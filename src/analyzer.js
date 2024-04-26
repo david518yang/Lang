@@ -104,10 +104,13 @@ export default function analyze(match) {
         must(e.type?.kind === 'ArrayType', 'Expected an array', at)
     }
 
+<<<<<<< HEAD
     // function mustHaveAnOptionalType(e, at) {
     //     must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
     // }
 
+=======
+>>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
     function mustHaveAClassType(e, at) {
         must(e.type?.kind === 'ClassType', 'Expected a class', at)
     }
@@ -189,8 +192,11 @@ export default function analyze(match) {
                 return 'string'
             case 'BoolType':
                 return 'boolean'
+<<<<<<< HEAD
             case 'AnyType':
                 return 'any'
+=======
+>>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
             case 'ClassType':
                 return type.name
             case 'ArrayType':
