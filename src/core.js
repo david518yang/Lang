@@ -1,5 +1,5 @@
-export function program(stmts) {
-    return { kind: 'Program', stmts }
+export function program(statements) {
+    return { kind: 'Program', statements }
 }
 
 export function variableDeclaration(variable, initializer) {
