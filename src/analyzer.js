@@ -457,7 +457,7 @@ export default function analyze(match) {
             Stmt_shortreturn(returnKeyword, _semicolon) {
                 mustBeInAFunction({ at: returnKeyword })
                 mustNotReturnAnything(context.function, { at: returnKeyword })
-                return core.shortreturnStatement()
+                return core.shortReturnStatement()
             },
 
             IfStmt_long(_if, exp, block1, _else, block2) {

@@ -45,6 +45,14 @@ export function arrayType(baseType) {
     return { kind: 'ArrayType', baseType }
 }
 
+export function emptyArray(type) {
+    return { kind: "EmptyArray", type }
+}
+
+export function arrayExpression(elements) {
+    return { kind: "ArrayExpression", elements, type: arrayType(elements[0].type) }
+}
+
 export function optionalType(baseType) {
     return { kind: 'OptionalType', baseType }
 }
@@ -55,6 +63,10 @@ export function assignment(target, source) {
 
 export const breakStatement = { kind: 'BreakStatement' }
 
+export function forStatement(iterator, collection, body) {
+    return { kind: "ForStatement", iterator, collection, body }
+}
+
 export function forRangeStatement(variable, start, end, body) {
     return { kind: 'ForRangeStatement', variable, start, end, body }
 }
@@ -63,7 +75,7 @@ export function returnStatement(expression) {
     return { kind: 'ReturnStatement', expression }
 }
 
-export function shortreturnStatement() {
+export function shortReturnStatement() {
     return { kind: 'shortreturnStatement' }
 }
 
@@ -93,6 +105,10 @@ export function unary(op, operand, type) {
 
 export function emptyOptional(baseType) {
     return { kind: 'EmptyOptional', baseType, type: optionalType(baseType) }
+}
+
+export function memberExpression(object, op, field) {
+    return { kind: "MemberExpression", object, op, field, type: field.type }
 }
 
 export function functionCall(callee, args) {
