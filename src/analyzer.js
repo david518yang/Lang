@@ -108,19 +108,19 @@ export default function analyze(match) {
         must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
     }
 
-    function mustHaveAStructType(e, at) {
-        must(e.type?.kind === 'StructType', 'Expected a struct', at)
+    function mustHaveAClassType(e, at) {
+        must(e.type?.kind === 'ClassType', 'Expected a class', at)
     }
 
-    function mustHaveAnOptionalStructType(e, at) {
-        // Used to check e?.x expressions, e must be an optional struct
-        must(
-            e.type?.kind === 'OptionalType' &&
-                e.type.baseType?.kind === 'StructType',
-            'Expected an optional struct',
-            at
-        )
-    }
+    // function mustHaveAnOptionalStructType(e, at) {
+    //     // Used to check e?.x expressions, e must be an optional struct
+    //     must(
+    //         e.type?.kind === 'OptionalType' &&
+    //             e.type.baseType?.kind === 'StructType',
+    //         'Expected an optional struct',
+    //         at
+    //     )
+    // }
 
     function mustBothHaveTheSameType(e1, e2, at) {
         must(
@@ -151,19 +151,19 @@ export default function analyze(match) {
         must(t?.kind === 'ArrayType', 'Must be an array type', at)
     }
 
-    function includesAsField(structType, type) {
+    function includesAsField(classType, type) {
         // Whether the struct type has a field of type type, directly or indirectly
-        return structType.fields.some(
+        return classType.fields.some(
             (field) =>
                 field.type === type ||
-                (field.type?.kind === 'StructType' &&
+                (field.type?.kind === 'ClassType' &&
                     includesAsField(field.type, type))
         )
     }
 
-    function mustNotBeSelfContaining(structType, at) {
-        const containsSelf = includesAsField(structType, structType)
-        must(!containsSelf, 'Struct type must not be self-containing', at)
+    function mustNotBeSelfContaining(classType, at) {
+        const containsSelf = includesAsField(classType, classType)
+        must(!containsSelf, 'Class type must not be self-containing', at)
     }
 
     function equivalent(t1, t2) {
@@ -213,7 +213,7 @@ export default function analyze(match) {
                 return 'void'
             case 'AnyType':
                 return 'any'
-            case 'StructType':
+            case 'ClassType':
                 return type.name
             case 'FunctionType':
                 const paramTypes = type.paramTypes
@@ -248,9 +248,9 @@ export default function analyze(match) {
         )
     }
 
-    function mustHaveMember(structType, field, at) {
+    function mustHaveMember(classType, field, at) {
         must(
-            structType.fields.map((f) => f.name).includes(field),
+            classType.fields.map((f) => f.name).includes(field),
             'No such field',
             at
         )
@@ -266,7 +266,7 @@ export default function analyze(match) {
 
     function mustBeCallable(e, at) {
         const callable =
-            e?.kind === 'StructType' || e.type?.kind === 'FunctionType'
+            e?.kind === 'ClassType' || e.type?.kind === 'FunctionType'
         must(callable, 'Call of non-function or non-constructor', at)
     }
 
@@ -345,18 +345,18 @@ export default function analyze(match) {
             },
 
             // Eventually use ClassDef
-            // TypeDecl(_struct, id, _left, fields, _right) {
-            //     // To allow recursion, enter into context without any fields yet
-            //     const type = core.structType(id.sourceString, [])
-            //     mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-            //     context.add(id.sourceString, type)
-            //     // Now add the types as you parse and analyze. Since we already added
-            //     // the struct type itself into the context, we can use it in fields.
-            //     type.fields = fields.children.map((field) => field.rep())
-            //     mustHaveDistinctFields(type, { at: id })
-            //     mustNotBeSelfContaining(type, { at: id })
-            //     return core.typeDeclaration(type)
-            // },
+            ClassDef(_class, id, _left, fields, _right, _semicolon) {
+                // To allow recursion, enter into context without any fields yet
+                const type = core.classType(id.sourceString, [])
+                mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+                context.add(id.sourceString, type)
+                // Now add the types as you parse and analyze. Since we already added
+                // the struct type itself into the context, we can use it in fields.
+                type.fields = fields.children.map((field) => field.rep())
+                mustHaveDistinctFields(type, { at: id })
+                mustNotBeSelfContaining(type, { at: id })
+                return core.typeDeclaration(type)
+            },
 
             Field(id, _colon, type, _semicolon) {
                 return core.field(id.sourceString, type.rep())
@@ -409,6 +409,13 @@ export default function analyze(match) {
 
             Type_arr(baseType, _left, _right) {
                 return core.arrayType(baseType.rep())
+            },
+
+            Type_id(id) {
+                const entity = context.lookup(id.sourceString)
+                mustHaveBeenFound(entity, id.sourceString, { at: id })
+                mustBeAType(entity, { at: id })
+                return entity
             },
 
             // Type_lambda(_left, params, _right, _arrow, returnType) {
@@ -587,173 +594,6 @@ export default function analyze(match) {
                 return core.binary(op, left, right, left.type)
             },
 
-            // Exp_conditional(exp, _questionMark, exp1, colon, exp2) {
-            //     const test = exp.rep()
-            //     mustHaveBooleanType(test, { at: exp })
-            //     const [consequent, alternate] = [exp1.rep(), exp2.rep()]
-            //     mustBothHaveTheSameType(consequent, alternate, { at: colon })
-            //     return core.conditional(
-            //         test,
-            //         consequent,
-            //         alternate,
-            //         consequent.type
-            //     )
-            // },
-
-            // Exp1_unwrapelse(exp1, elseOp, exp2) {
-            //     const [optional, op, alternate] = [
-            //         exp1.rep(),
-            //         elseOp.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     mustHaveAnOptionalType(optional, { at: exp1 })
-            //     mustBeAssignable(
-            //         alternate,
-            //         { toType: optional.type.baseType },
-            //         { at: exp2 }
-            //     )
-            //     return core.binary(op, optional, alternate, optional.type)
-            // },
-
-            // Exp2_or(exp, _ops, exps) {
-            //     let left = exp.rep()
-            //     mustHaveBooleanType(left, { at: exp })
-            //     for (let e of exps.children) {
-            //         let right = e.rep()
-            //         mustHaveBooleanType(right, { at: e })
-            //         left = core.binary('||', left, right, BOOLEAN)
-            //     }
-            //     return left
-            // },
-
-            // Exp2_and(exp, _ops, exps) {
-            //     let left = exp.rep()
-            //     mustHaveBooleanType(left, { at: exp })
-            //     for (let e of exps.children) {
-            //         let right = e.rep()
-            //         mustHaveBooleanType(right, { at: e })
-            //         left = core.binary('&&', left, right, BOOLEAN)
-            //     }
-            //     return left
-            // },
-
-            // Exp3_bitor(exp, _ops, exps) {
-            //     let left = exp.rep()
-            //     mustHaveIntegerType(left, { at: exp })
-            //     for (let e of exps.children) {
-            //         let right = e.rep()
-            //         mustHaveIntegerType(right, { at: e })
-            //         left = core.binary('|', left, right, INT)
-            //     }
-            //     return left
-            // },
-
-            // Exp3_bitxor(exp, xorOps, exps) {
-            //     let left = exp.rep()
-            //     mustHaveIntegerType(left, { at: exp })
-            //     for (let e of exps.children) {
-            //         let right = e.rep()
-            //         mustHaveIntegerType(right, { at: e })
-            //         left = core.binary('^', left, right, INT)
-            //     }
-            //     return left
-            // },
-
-            // Exp3_bitand(exp, andOps, exps) {
-            //     let left = exp.rep()
-            //     mustHaveIntegerType(left, { at: exp })
-            //     for (let e of exps.children) {
-            //         let right = e.rep()
-            //         mustHaveIntegerType(right, { at: e })
-            //         left = core.binary('&', left, right, INT)
-            //     }
-            //     return left
-            // },
-
-            // Exp4_compare(exp1, relop, exp2) {
-            //     const [left, op, right] = [
-            //         exp1.rep(),
-            //         relop.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     // == and != can have any operand types as long as they are the same
-            //     // But inequality operators can only be applied to numbers and strings
-            //     if (['<', '<=', '>', '>='].includes(op)) {
-            //         mustHaveNumericOrStringType(left, { at: exp1 })
-            //     }
-            //     mustBothHaveTheSameType(left, right, { at: relop })
-            //     return core.binary(op, left, right, BOOLEAN)
-            // },
-
-            // Exp5_shift(exp1, shiftOp, exp2) {
-            //     const [left, op, right] = [
-            //         exp1.rep(),
-            //         shiftOp.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     mustHaveIntegerType(left, { at: exp1 })
-            //     mustHaveIntegerType(right, { at: exp2 })
-            //     return core.binary(op, left, right, INT)
-            // },
-
-            // Exp6_add(exp1, addOp, exp2) {
-            //     const [left, op, right] = [
-            //         exp1.rep(),
-            //         addOp.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     if (op === '+') {
-            //         mustHaveNumericOrStringType(left, { at: exp1 })
-            //     } else {
-            //         mustHaveNumericType(left, { at: exp1 })
-            //     }
-            //     mustBothHaveTheSameType(left, right, { at: addOp })
-            //     return core.binary(op, left, right, left.type)
-            // },
-
-            // Exp7_multiply(exp1, mulOp, exp2) {
-            //     const [left, op, right] = [
-            //         exp1.rep(),
-            //         mulOp.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     mustHaveNumericType(left, { at: exp1 })
-            //     mustBothHaveTheSameType(left, right, { at: mulOp })
-            //     return core.binary(op, left, right, left.type)
-            // },
-
-            // Exp8_power(exp1, powerOp, exp2) {
-            //     const [left, op, right] = [
-            //         exp1.rep(),
-            //         powerOp.sourceString,
-            //         exp2.rep(),
-            //     ]
-            //     mustHaveNumericType(left, { at: exp1 })
-            //     mustBothHaveTheSameType(left, right, { at: powerOp })
-            //     return core.binary(op, left, right, left.type)
-            // },
-
-            // Exp8_unary(unaryOp, exp) {
-            //     const [op, operand] = [unaryOp.sourceString, exp.rep()]
-            //     let type
-            //     if (op === '#') {
-            //         mustHaveAnArrayType(operand, { at: exp })
-            //         type = INT
-            //     } else if (op === '-') {
-            //         mustHaveNumericType(operand, { at: exp })
-            //         type = operand.type
-            //     } else if (op === '!') {
-            //         mustHaveBooleanType(operand, { at: exp })
-            //         type = BOOLEAN
-            //     } else if (op === 'some') {
-            //         type = core.optionalType(operand.type)
-            //     } else if (op === 'random') {
-            //         mustHaveAnArrayType(operand, { at: exp })
-            //         type = operand.type.baseType
-            //     }
-            //     return core.unary(op, operand, type)
-            // },
-
             Primary_emptyarray(ty, _open, _close) {
                 const type = ty.rep()
                 mustBeAnArrayType(type, { at: ty })
@@ -781,29 +621,25 @@ export default function analyze(match) {
             //     return core.subscript(array, subscript)
             // },
 
-            // Primary_member(exp, dot, id) {
-            //     const object = exp.rep()
-            //     let structType
-            //     if (dot.sourceString === '?.') {
-            //         mustHaveAnOptionalStructType(object, { at: exp })
-            //         structType = object.type.baseType
-            //     } else {
-            //         mustHaveAStructType(object, { at: exp })
-            //         structType = object.type
-            //     }
-            //     mustHaveMember(structType, id.sourceString, { at: id })
-            //     const field = structType.fields.find(
-            //         (f) => f.name === id.sourceString
-            //     )
-            //     return core.memberExpression(object, dot.sourceString, field)
-            // },
+            Primary_member(exp, _dot, id) {
+                const object = exp.rep()
+                let classType
+                if (_dot.sourceString === ".") {
+                  mustHaveAClassType(object, { at: exp })
+                  classType = object.type
+                }
+                mustHaveMember(classType, id.sourceString, { at: id })
+                const field = classType.fields.find(f => f.name === id.sourceString)
+                return core.memberExpression(object, _dot.sourceString, field)
+            },
+
 
             Primary_call(exp, open, expList, _close) {
                 const callee = exp.rep()
                 mustBeCallable(callee, { at: exp })
                 const exps = expList.asIteration().children
                 const targetTypes =
-                    callee?.kind === 'StructType'
+                    callee?.kind === 'ClassType'
                         ? callee.fields.map((f) => f.type)
                         : callee.type.paramTypes
                 mustHaveCorrectArgumentCount(exps.length, targetTypes.length, {
@@ -818,7 +654,7 @@ export default function analyze(match) {
                     )
                     return arg
                 })
-                return callee?.kind === 'StructType'
+                return callee?.kind === 'ClassType'
                     ? core.constructorCall(callee, args)
                     : core.functionCall(callee, args)
             },

@@ -27,7 +27,7 @@ MODE {
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" yield Exp otherwise Exp
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
-    ClassDef    = class id "{" Field* "}"         --classdef
+    ClassDef    = class id "{" Field* "}" ";"
     Field       = id ":" Type ";"
     FunDecl     = func id Params (":" Type)? Block
   	Params      = "(" ListOf<Param, ","> ")"
@@ -35,6 +35,7 @@ MODE {
     
     Type        = Type "[" "]"                      --arr
                 | types                             --primitive
+                | id                                --id
     Exp         = Ternary
                 | Exp0
     Exp0        = Exp1 relop Exp1                   --comparison
@@ -49,6 +50,7 @@ MODE {
     Primary     = Primary_id "(" ListOf<Exp, ","> ")"      --call
                 | float                             --num
                 | int                               --int
+                | Primary "." id                    --member
                 | id                                --id
                 | string ~mut                       --string
                 | true ~mut                         --true

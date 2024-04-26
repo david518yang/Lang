@@ -30,6 +30,7 @@ const semanticChecks = [
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
     ['if with yield', 'print if (true) yield 1 otherwise 2;'],
+    
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],
@@ -65,6 +66,7 @@ const semanticChecks = [
     //     'nested structs',
     //     'struct T{y:int} struct S{z: T} let x=S(T(1)); print(x.z.y);',
     // ],
+    ['class declaration', 'class Dog { name:string; age:int;};'],
     // ['member exp', 'struct S {x: int} let y = S(1);print(y.x);'],
     // ['optional member exp', 'struct S {x: int} let y = some S(1);print(y?.x);'],
     // ['subscript exp', 'let a=[1,2];print(a[0]);'],
@@ -109,6 +111,14 @@ const semanticChecks = [
     // ['built-in sin', 'print(sin(π));'],
     // ['built-in cos', 'print(cos(93.999));'],
     // ['built-in hypot', 'print(hypot(-4.0, 3.00001));'],
+    ['floatType', 'float x = 5.820;'],
+    ['check float type', 'float x = 5.820; print x;'],
+    ['return float keyword', 'func f(): float { return 5.820; }'],
+    ['primary array expression', 'auto x = [1, 2, 3];'],    
+    ['comparison operators', 'if 1 < 2 { print 1; }'],
+    ['forStatement iterable', 'for i in [1, 2, 3] { print i; }'],
+    ['class member has a member', 'class Dog { name:string; age:int; }; auto d = Dog("max", 2); print d.age;'],
+    ['term binary multiplication', 'auto product = 8; product = product * 4;']
 ]
 
 // Programs that are syntactically correct but have semantic errors
