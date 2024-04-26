@@ -105,10 +105,13 @@ export default function analyze(match) {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     // function mustHaveAnOptionalType(e, at) {
     //     must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
     // }
 
+=======
+>>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
 =======
 >>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
     function mustHaveAClassType(e, at) {
@@ -193,8 +196,11 @@ export default function analyze(match) {
             case 'BoolType':
                 return 'boolean'
 <<<<<<< HEAD
+<<<<<<< HEAD
             case 'AnyType':
                 return 'any'
+=======
+>>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
 =======
 >>>>>>> 2fcb6074c2f809f4cb62ad91e6677f01c2f79ffa
             case 'ClassType':
