@@ -10,8 +10,8 @@ export function variable(name, type) {
     return { kind: 'Variable', name, type }
 }
 
-export function classDeclaration(classBody) {
-    return { kind: 'ClassDeclaration', classBody }
+export function typeDeclaration(type) {
+    return{ kind: "TypeDeclaration", type}
 }
 
 export function printStatement(expression) {
@@ -24,6 +24,11 @@ export const floatType = { kind: 'FloatType' }
 export const stringType = { kind: 'StringType' }
 export const voidType = { kind: 'VoidType' }
 export const anyType = { kind: 'AnyType' }
+
+export function classType(name, fields) {
+    return { kind: "ClassType", name, fields }
+}
+
 
 export function field(name, type) {
     return { kind: 'Field', name, type }
@@ -119,24 +124,22 @@ export function constructorCall(callee, args) {
     return { kind: 'ConstructorCall', callee, args, type: callee }
 }
 
-// const floatToFloatType = functionType([floatType], floatType)
-// const floatFloatToFloatType = functionType([floatType, floatType], floatType)
-// const stringToIntsType = functionType([stringType], arrayType(intType))
-// const anyToVoidType = functionType([anyType], voidType)
-
+const floatToFloatType = functionType([floatType], floatType)
+const floatFloatToFloatType = functionType([floatType, floatType], floatType)
+const stringToIntsType = functionType([stringType], arrayType(intType))
 const anyToVoidType = functionType([anyType], voidType)
 
 export const standardLibrary = Object.freeze({
     print: fun("print", anyToVoidType)
-    //     int: intType,
-    //     float: floatType,
-    //     boolean: boolType,
-    //     string: stringType,
-    //     void: voidType,
-    //     any: anyType,
-    //     π: variable('π', true, floatType),
-    //     exp: fun('exp', floatToFloatType),
-    //     ln: fun('ln', floatToFloatType),
+        int: intType,
+        float: floatType,
+        boolean: boolType,
+        string: stringType,
+        void: voidType,
+        any: anyType,
+        π: variable('π', true, floatType),
+        exp: fun('exp', floatToFloatType),
+        ln: fun('ln', floatToFloatType),
 })
 
 String.prototype.type = stringType
