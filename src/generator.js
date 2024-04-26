@@ -10,6 +10,10 @@ export default function generate(program) {
   // with newlines and return the result.
   const output = []
 
+  const standardFunctions = new Map([
+    [standardLibrary.print, x => `console.log(${x})`]
+  ])
+
   // Variable and function names in JS will be suffixed with _1, _2, _3,
   // etc. This is because "switch", for example, is a legal name in Carlos,
   // but not in JS. So, the Carlos variable "switch" must become something

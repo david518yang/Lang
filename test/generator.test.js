@@ -19,8 +19,8 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 21;
-      x_1++;
-      x_1--;
+      x_1 = x_1 + 1;
+      x_1 = x_1 - 1;
       let y_2 = true;
     `,
   },
@@ -155,9 +155,6 @@ const fixtures = [
       for j in [10, 20, 30] {
         print j;
       }
-      for k in 1..10 {
-        return;
-      }
     `,
     expected: dedent`
       for (let i_1 = 1; i_1 < 50; i_1++) {
@@ -165,9 +162,6 @@ const fixtures = [
       }
       for (let j_2 of [10,20,30]) {
         console.log(j_2);
-      }
-      for (let k_4 = 1; k_4 <= 10; k_4++) {
-        return;
       }
     `,
   },

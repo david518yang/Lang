@@ -124,7 +124,10 @@ export function constructorCall(callee, args) {
 // const stringToIntsType = functionType([stringType], arrayType(intType))
 // const anyToVoidType = functionType([anyType], voidType)
 
+const anyToVoidType = functionType([anyType], voidType)
+
 export const standardLibrary = Object.freeze({
+    print: fun("print", anyToVoidType)
     //     int: intType,
     //     float: floatType,
     //     boolean: boolType,
