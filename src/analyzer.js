@@ -503,7 +503,11 @@ export default function analyze(match) {
                 alternate,
                 _semicolon
             ) {
-                throw new Error('Ternary operator not yet implemented')
+                return core.conditional(
+                    test.rep(),
+                    consequent.rep(),
+                    alternate.rep()
+                )
             },
 
             WhileStmt(_while, exp, block) {

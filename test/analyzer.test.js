@@ -7,12 +7,12 @@ import {
     variable,
     binary,
     floatType,
-    intType
+    intType,
 } from '../src/core.js'
 
 // Programs that are semantically correct
 const semanticChecks = [
-    ['variable declarations', 'auto x = 5;'],
+    ['variable declarations', 'auto x = 5.8E20;'],
     [
         'function declarations',
         `func add(x: int, y: int): int { return x + y; }`,
@@ -29,10 +29,11 @@ const semanticChecks = [
     ],
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
+    ['if with yield', 'if (true) yield 1 otherwise 2;'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],
-    //["initialize with empty array", "let a = [int]();"],
+    ['initialize with empty array', 'auto a = int[]();'],
     //['type declaration', 'struct S {f: (int)->boolean? g: string}'],
     //["assign arrays", "let a = [int]();let b=[1];a=b;b=a;"],
     //["assign to array element", "const a = [1,2,3]; a[1]=100;"],
@@ -112,7 +113,11 @@ const semanticChecks = [
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-    ['type mismatch', `auto x = "hello"; x = 5;`, /Cannot assign a int to a string/],
+    [
+        'type mismatch',
+        `auto x = "hello"; x = 5;`,
+        /Cannot assign a int to a string/,
+    ],
     ['undeclared ids', `print(x);`, /Identifier x not declared/],
     ['break outside of loop', `break;`, /Break can only appear in a loop/],
     [
@@ -175,12 +180,32 @@ const semanticErrors = [
         /should be returned/,
     ],
 
-    ['non-boolean short if test', 'if 1 {print "Hello";}', /Expected a boolean/],
-    ['non-boolean if test', 'if 1 {print "Hello";} else {print "Goodbye";}', /Expected a boolean/],
-    ['non-boolean while test', 'while 1 {print "Hello";}', /Expected a boolean/],
+    [
+        'non-boolean short if test',
+        'if 1 {print "Hello";}',
+        /Expected a boolean/,
+    ],
+    [
+        'non-boolean if test',
+        'if 1 {print "Hello";} else {print "Goodbye";}',
+        /Expected a boolean/,
+    ],
+    [
+        'non-boolean while test',
+        'while 1 {print "Hello";}',
+        /Expected a boolean/,
+    ],
     // ['non-integer repeat', 'repeat "1" {}', /Expected an integer/],
-    ['non-integer low range', 'for i in true..2 {print i;}', /Expected an integer/],
-    ['non-integer high range', 'auto no = "Hello"; for i in 1..no {print i;}', /Expected an integer/],
+    [
+        'non-integer low range',
+        'for i in true..2 {print i;}',
+        /Expected an integer/,
+    ],
+    [
+        'non-integer high range',
+        'auto no = "Hello"; for i in 1..no {print i;}',
+        /Expected an integer/,
+    ],
     //['non-array in for', 'for i in 100 {}', /Expected an array/],
     // ['non-boolean conditional test', 'print(1?2:3);', /Expected a boolean/],
     // [
