@@ -89,7 +89,8 @@ MODE {
     floatkeyword = "float" ~idchar
     boolkeyword = "bool" ~idchar
     stringkeyword = "string" ~idchar
-    types       = intkeyword | floatkeyword | boolkeyword | stringkeyword
+    anykeyword  = "any" ~idchar
+    types       = intkeyword | floatkeyword | boolkeyword | stringkeyword | anykeyword
     keyword     = print | if | else | while | for | in | break | return | true | false | auto | func | class | yield | otherwise
                 | types
     idchar      = letter | digit | "_"

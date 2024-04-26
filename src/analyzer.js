@@ -104,9 +104,9 @@ export default function analyze(match) {
         must(e.type?.kind === 'ArrayType', 'Expected an array', at)
     }
 
-    function mustHaveAnOptionalType(e, at) {
-        must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
-    }
+    // function mustHaveAnOptionalType(e, at) {
+    //     must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
+    // }
 
     function mustHaveAClassType(e, at) {
         must(e.type?.kind === 'ClassType', 'Expected a class', at)
@@ -169,34 +169,14 @@ export default function analyze(match) {
     function equivalent(t1, t2) {
         return (
             t1 === t2 ||
-            (t1?.kind === 'OptionalType' &&
-                t2?.kind === 'OptionalType' &&
-                equivalent(t1.baseType, t2.baseType)) ||
             (t1?.kind === 'ArrayType' &&
                 t2?.kind === 'ArrayType' &&
-                equivalent(t1.baseType, t2.baseType)) ||
-            (t1?.kind === 'FunctionType' &&
-                t2?.kind === 'FunctionType' &&
-                equivalent(t1.returnType, t2.returnType) &&
-                t1.paramTypes.length === t2.paramTypes.length &&
-                t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+                equivalent(t1.baseType, t2.baseType))
         )
     }
 
     function assignable(fromType, toType) {
-        return (
-            toType == ANY ||
-            equivalent(fromType, toType) ||
-            (fromType?.kind === 'FunctionType' &&
-                toType?.kind === 'FunctionType' &&
-                // covariant in return types
-                assignable(fromType.returnType, toType.returnType) &&
-                fromType.paramTypes.length === toType.paramTypes.length &&
-                // contravariant in parameter types
-                toType.paramTypes.every((t, i) =>
-                    assignable(t, fromType.paramTypes[i])
-                ))
-        )
+        return toType == ANY || equivalent(fromType, toType)
     }
 
     function typeDescription(type) {
@@ -209,22 +189,12 @@ export default function analyze(match) {
                 return 'string'
             case 'BoolType':
                 return 'boolean'
-            case 'VoidType':
-                return 'void'
             case 'AnyType':
                 return 'any'
             case 'ClassType':
                 return type.name
-            case 'FunctionType':
-                const paramTypes = type.paramTypes
-                    .map(typeDescription)
-                    .join(', ')
-                const returnType = typeDescription(type.returnType)
-                return `(${paramTypes})->${returnType}`
             case 'ArrayType':
                 return `[${typeDescription(type.baseType)}]`
-            case 'OptionalType':
-                return `${typeDescription(type.baseType)}?`
         }
     }
 
@@ -233,10 +203,6 @@ export default function analyze(match) {
             e.type
         )} to a ${typeDescription(type)}`
         must(assignable(e.type, type), message, at)
-    }
-
-    function mustNotBeReadOnly(e, at) {
-        must(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
     }
 
     function mustHaveDistinctFields(type, at) {
@@ -624,15 +590,16 @@ export default function analyze(match) {
             Primary_member(exp, _dot, id) {
                 const object = exp.rep()
                 let classType
-                if (_dot.sourceString === ".") {
-                  mustHaveAClassType(object, { at: exp })
-                  classType = object.type
+                if (_dot.sourceString === '.') {
+                    mustHaveAClassType(object, { at: exp })
+                    classType = object.type
                 }
                 mustHaveMember(classType, id.sourceString, { at: id })
-                const field = classType.fields.find(f => f.name === id.sourceString)
+                const field = classType.fields.find(
+                    (f) => f.name === id.sourceString
+                )
                 return core.memberExpression(object, _dot.sourceString, field)
             },
-
 
             Primary_call(exp, open, expList, _close) {
                 const callee = exp.rep()

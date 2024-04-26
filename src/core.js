@@ -11,7 +11,7 @@ export function variable(name, type) {
 }
 
 export function typeDeclaration(type) {
-    return{ kind: "TypeDeclaration", type}
+    return { kind: 'TypeDeclaration', type }
 }
 
 export function printStatement(expression) {
@@ -22,13 +22,11 @@ export const boolType = { kind: 'BoolType' }
 export const intType = { kind: 'IntType' }
 export const floatType = { kind: 'FloatType' }
 export const stringType = { kind: 'StringType' }
-export const voidType = { kind: 'VoidType' }
 export const anyType = { kind: 'AnyType' }
 
 export function classType(name, fields) {
-    return { kind: "ClassType", name, fields }
+    return { kind: 'ClassType', name, fields }
 }
-
 
 export function field(name, type) {
     return { kind: 'Field', name, type }
@@ -51,11 +49,15 @@ export function arrayType(baseType) {
 }
 
 export function emptyArray(type) {
-    return { kind: "EmptyArray", type }
+    return { kind: 'EmptyArray', type }
 }
 
 export function arrayExpression(elements) {
-    return { kind: "ArrayExpression", elements, type: arrayType(elements[0].type) }
+    return {
+        kind: 'ArrayExpression',
+        elements,
+        type: arrayType(elements[0].type),
+    }
 }
 
 export function optionalType(baseType) {
@@ -69,7 +71,7 @@ export function assignment(target, source) {
 export const breakStatement = { kind: 'BreakStatement' }
 
 export function forStatement(iterator, collection, body) {
-    return { kind: "ForStatement", iterator, collection, body }
+    return { kind: 'ForStatement', iterator, collection, body }
 }
 
 export function forRangeStatement(variable, start, end, body) {
@@ -113,7 +115,7 @@ export function emptyOptional(baseType) {
 }
 
 export function memberExpression(object, op, field) {
-    return { kind: "MemberExpression", object, op, field, type: field.type }
+    return { kind: 'MemberExpression', object, op, field, type: field.type }
 }
 
 export function functionCall(callee, args) {
@@ -127,18 +129,16 @@ export function constructorCall(callee, args) {
 const floatToFloatType = functionType([floatType], floatType)
 const floatFloatToFloatType = functionType([floatType, floatType], floatType)
 const stringToIntsType = functionType([stringType], arrayType(intType))
-const anyToVoidType = functionType([anyType], voidType)
 
 export const standardLibrary = Object.freeze({
-        int: intType,
-        float: floatType,
-        boolean: boolType,
-        string: stringType,
-        void: voidType,
-        any: anyType,
-        π: variable('π', true, floatType),
-        exp: fun('exp', floatToFloatType),
-        ln: fun('ln', floatToFloatType),
+    int: intType,
+    float: floatType,
+    boolean: boolType,
+    string: stringType,
+    any: anyType,
+    π: variable('π', true, floatType),
+    exp: fun('exp', floatToFloatType),
+    ln: fun('ln', floatToFloatType),
 })
 
 String.prototype.type = stringType

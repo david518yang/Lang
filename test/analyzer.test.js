@@ -30,7 +30,7 @@ const semanticChecks = [
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
     ['if with yield', 'print if (true) yield 1 otherwise 2;'],
-    
+
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],
@@ -114,11 +114,22 @@ const semanticChecks = [
     ['floatType', 'float x = 5.820;'],
     ['check float type', 'float x = 5.820; print x;'],
     ['return float keyword', 'func f(): float { return 5.820; }'],
-    ['primary array expression', 'auto x = [1, 2, 3];'],    
+    ['primary array expression', 'auto x = [1, 2, 3];'],
     ['comparison operators', 'if 1 < 2 { print 1; }'],
     ['forStatement iterable', 'for i in [1, 2, 3] { print i; }'],
-    ['class member has a member', 'class Dog { name:string; age:int; }; auto d = Dog("max", 2); print d.age;'],
-    ['term binary multiplication', 'auto product = 8; product = product * 4;']
+    [
+        'class member has a member',
+        'class Dog { name:string; age:int; }; auto d = Dog("max", 2); print d.age;',
+    ],
+    ['term binary multiplication', 'auto product = 8; product = product * 4;'],
+    [
+        'type id',
+        'class Square{ area: int; }; class Rectangle{ square: Square; }; auto r = Rectangle(Square(4));',
+    ],
+    [
+        'type description for array type',
+        'int[] arr = [1, 2, 3]; arr = [2, 3, 4];',
+    ],
 ]
 
 // Programs that are syntactically correct but have semantic errors
@@ -254,6 +265,11 @@ const semanticErrors = [
     //['non-integer index', 'let a=[1];print(a[false]);', /Expected an integer/],
     //['no such field', 'struct S{} let x=S(); print(x.y);', /No such field/],
     // [
+    [
+        'no such member in class',
+        'class Dog { name:string; age:int; }; auto d = Dog("max", 2); print d.breed;',
+        /No such field/,
+    ],
     //     'diff type array elements',
     //     'print([3,3.0]);',
     //     /Not all elements have the same type/,
