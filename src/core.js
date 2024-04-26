@@ -130,16 +130,16 @@ const stringToIntsType = functionType([stringType], arrayType(intType))
 const anyToVoidType = functionType([anyType], voidType)
 
 export const standardLibrary = Object.freeze({
-    print: fun("print", anyToVoidType)
-        int: intType,
-        float: floatType,
-        boolean: boolType,
-        string: stringType,
-        void: voidType,
-        any: anyType,
-        π: variable('π', true, floatType),
-        exp: fun('exp', floatToFloatType),
-        ln: fun('ln', floatToFloatType),
+    print: fun("print", anyToVoidType),
+    int: intType,
+    float: floatType,
+    boolean: boolType,
+    string: stringType,
+    void: voidType,
+    any: anyType,
+    π: variable('π', true, floatType),
+    exp: fun('exp', floatToFloatType),
+    ln: fun('ln', floatToFloatType),
 })
 
 String.prototype.type = stringType

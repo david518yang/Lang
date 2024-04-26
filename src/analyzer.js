@@ -104,10 +104,6 @@ export default function analyze(match) {
         must(e.type?.kind === 'ArrayType', 'Expected an array', at)
     }
 
-    function mustHaveAnOptionalType(e, at) {
-        must(e.type?.kind === 'OptionalType', 'Expected an optional', at)
-    }
-
     function mustHaveAClassType(e, at) {
         must(e.type?.kind === 'ClassType', 'Expected a class', at)
     }
@@ -209,10 +205,6 @@ export default function analyze(match) {
                 return 'string'
             case 'BoolType':
                 return 'boolean'
-            case 'VoidType':
-                return 'void'
-            case 'AnyType':
-                return 'any'
             case 'ClassType':
                 return type.name
             case 'FunctionType':
@@ -223,8 +215,6 @@ export default function analyze(match) {
                 return `(${paramTypes})->${returnType}`
             case 'ArrayType':
                 return `[${typeDescription(type.baseType)}]`
-            case 'OptionalType':
-                return `${typeDescription(type.baseType)}?`
         }
     }
 
@@ -233,10 +223,6 @@ export default function analyze(match) {
             e.type
         )} to a ${typeDescription(type)}`
         must(assignable(e.type, type), message, at)
-    }
-
-    function mustNotBeReadOnly(e, at) {
-        must(!e.readOnly, `Cannot assign to constant ${e.name}`, at)
     }
 
     function mustHaveDistinctFields(type, at) {
