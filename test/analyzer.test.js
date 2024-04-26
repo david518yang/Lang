@@ -29,7 +29,7 @@ const semanticChecks = [
     ],
     ['short return', 'func shortReturnFunction(){return;}'],
     ['long return', 'func longReturnFunction(): bool{ return true;}'],
-    ['if with yield', 'if (true) yield 1 otherwise 2;'],
+    ['if with yield', 'print if (true) yield 1 otherwise 2;'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //['complex array types', 'function f(x: [[[int]]]) {}'],
     //["increment and decrement", "let x = 10; x--; x++;"],

@@ -491,7 +491,7 @@ export default function analyze(match) {
                 return core.shortIfStatement(test, consequent)
             },
 
-            // Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp ";"
+            // Ternary     = if "(" Exp ")" "yield" Exp "otherwise" Exp
             Ternary(
                 _if,
                 _open,
@@ -500,8 +500,7 @@ export default function analyze(match) {
                 _yield,
                 consequent,
                 _otherwise,
-                alternate,
-                _semicolon
+                alternate
             ) {
                 return core.conditional(
                     test.rep(),
@@ -562,7 +561,7 @@ export default function analyze(match) {
                 return core.binary(operator, left, right, left.type)
             },
 
-            Exp_comparison(exp1, relop, exp2) {
+            Exp0_comparison(exp1, relop, exp2) {
                 const [left, op, right] = [
                     exp1.rep(),
                     relop.sourceString,

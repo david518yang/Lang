@@ -19,14 +19,13 @@ MODE {
     IfStmt      = if Exp Block else Block                 --long
                 | if Exp Block else IfStmt                --elsif
                 | if Exp Block                            --short
-                | Ternary                                 --ternary
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
     ForStmt     = for id in Exp Block               --iterable
                 | for id in Exp ".." Exp Block             --range
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
-    Ternary     = if "(" Exp ")" yield Exp otherwise Exp ";"
+    Ternary     = if "(" Exp ")" yield Exp otherwise Exp
     Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
     ClassDef    = class id "{" Field* "}"         --classdef
     Field       = id ":" Type ";"
@@ -34,9 +33,11 @@ MODE {
   	Params      = "(" ListOf<Param, ","> ")"
  	Param       = id ":" Type
     
-    Type        = Type "[" "]"                         --arr
-                | types                                --primitive
-    Exp         = Exp1 relop Exp1                   --comparison
+    Type        = Type "[" "]"                      --arr
+                | types                             --primitive
+    Exp         = Ternary
+                | Exp0
+    Exp0        = Exp1 relop Exp1                   --comparison
                 | Exp1
     Exp1        = Exp1 ("+" | "-") Term             --binary
                 | Term
