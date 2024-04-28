@@ -142,6 +142,7 @@ export const standardLibrary = Object.freeze({
     boolean: boolType,
     string: stringType,
     any: anyType,
+    print: fun("print", anyToVoidType),
     π: variable('π', true, floatType),
     exp: fun('exp', floatToFloatType),
     ln: fun('ln', floatToFloatType),
