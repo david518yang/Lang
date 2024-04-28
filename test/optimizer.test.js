@@ -64,6 +64,8 @@ const tests = [
   ["optimizes in subscripts", sub(a, onePlusTwo), sub(a, 3)],
   ["optimizes in array literals", array(0, onePlusTwo, 9), array(0, 3, 9)],
   ["optimizes in arguments", callIdentity([times(3, 5)]), callIdentity([15])],
+  ["optimizes ConstructorCall", core.constructorCall(identity, [times(3, 5)]), core.constructorCall(identity, [15])],
+  ["optimizes MemberExpression", core.memberExpression(core.constructorCall(identity, [times(3, 5)]), ".", "f"), core.memberExpression(core.constructorCall(identity, [15]), ".", "f")],
   [
     "passes through nonoptimizable constructs",
     ...Array(2).fill([
@@ -83,6 +85,7 @@ const tests = [
       core.forStatement(x, array(1, 2, 3), []),
     ]),
   ],
+  ["optimizes whileStatement", core.whileStatement(true, [returnX]), core.whileStatement(true, [returnX])],
 ]
 
 describe("The optimizer", () => {
