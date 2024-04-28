@@ -117,7 +117,7 @@ const fixtures = [
     source: `
       auto a = [true, false, true];
       auto b = [10, 20, 30];
-      c = int[]()
+      auto c = int[]()
       print a[1] b[0];
     `,
     expected: dedent`
