@@ -117,21 +117,23 @@ const fixtures = [
     source: `
       auto a = [true, false, true];
       auto b = [10, 20, 30];
-      auto c = int[]()
-      print a[1] b[0];
+      auto c = int[]();
+      print a[1];
+      print b[1];
     `,
     expected: dedent`
       let a_1 = [true,false,true];
       let b_2 = [10,20,30];
       let c_3 = [];
-      console.log(a_1[1], b_2[0]);
+      console.log(a_1[1]);
+      console.log(b_2[1]);
     `,
   },
   // Not synactically correct yet - member operator not implemented
   {
     name: "classes",
     source: `
-      class S { x: int }
+      class S { x: int; };
       auto x = S(3);
       print(x.x);
     `,

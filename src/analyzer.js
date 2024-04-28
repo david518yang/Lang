@@ -580,12 +580,12 @@ export default function analyze(match) {
                 return expression.rep()
             },
 
-            // Primary_subscript(exp1, _open, exp2, _close) {
-            //     const [array, subscript] = [exp1.rep(), exp2.rep()]
-            //     mustHaveAnArrayType(array, { at: exp1 })
-            //     mustHaveIntegerType(subscript, { at: exp2 })
-            //     return core.subscript(array, subscript)
-            // },
+            Primary_subscript(exp1, _open, exp2, _close) {
+                const [array, subscript] = [exp1.rep(), exp2.rep()]
+                mustHaveAnArrayType(array, { at: exp1 })
+                mustHaveIntegerType(subscript, { at: exp2 })
+                return core.subscript(array, subscript)
+            },
 
             Primary_member(exp, _dot, id) {
                 const object = exp.rep()

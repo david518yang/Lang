@@ -50,6 +50,7 @@ MODE {
     Primary     = Primary_id "(" ListOf<Exp, ","> ")"      --call
                 | float                             --num
                 | int                               --int
+                | Primary ("[" | "?[") Exp "]"      --subscript
                 | Primary "." id                    --member
                 | id                                --id
                 | string ~mut                       --string

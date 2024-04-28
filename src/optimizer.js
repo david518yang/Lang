@@ -92,15 +92,6 @@ const optimizers = {
     s.body = s.body.flatMap(optimize)
     return s
   },
-  RepeatStatement(s) {
-    s.count = optimize(s.count)
-    if (s.count === 0) {
-      // repeat 0 times is a no-op
-      return []
-    }
-    s.body = s.body.flatMap(optimize)
-    return s
-  },
   ForRangeStatement(s) {
     s.iterator = optimize(s.iterator)
     s.low = optimize(s.low)

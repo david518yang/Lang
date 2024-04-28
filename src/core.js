@@ -23,6 +23,7 @@ export const intType = { kind: 'IntType' }
 export const floatType = { kind: 'FloatType' }
 export const stringType = { kind: 'StringType' }
 export const anyType = { kind: 'AnyType' }
+export const voidType = { kind: "VoidType" }
 
 export function classType(name, fields) {
     return { kind: 'ClassType', name, fields }
@@ -114,6 +115,10 @@ export function emptyOptional(baseType) {
     return { kind: 'EmptyOptional', baseType, type: optionalType(baseType) }
 }
 
+export function subscript(array, index) {
+    return { kind: "SubscriptExpression", array, index, type: array.type.baseType }
+  }
+
 export function memberExpression(object, op, field) {
     return { kind: 'MemberExpression', object, op, field, type: field.type }
 }
@@ -129,6 +134,7 @@ export function constructorCall(callee, args) {
 const floatToFloatType = functionType([floatType], floatType)
 const floatFloatToFloatType = functionType([floatType, floatType], floatType)
 const stringToIntsType = functionType([stringType], arrayType(intType))
+const anyToVoidType = functionType([anyType], voidType)
 
 export const standardLibrary = Object.freeze({
     int: intType,
@@ -139,6 +145,7 @@ export const standardLibrary = Object.freeze({
     π: variable('π', true, floatType),
     exp: fun('exp', floatToFloatType),
     ln: fun('ln', floatToFloatType),
+    void: voidType
 })
 
 String.prototype.type = stringType

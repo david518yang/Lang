@@ -61,6 +61,7 @@ const tests = [
   ["optimizes left conditional true", core.conditional(true, 55, 89), 55],
   ["optimizes left conditional false", core.conditional(false, 55, 89), 89],
   ["optimizes in functions", program([intFun(return1p1)]), program([intFun(return2)])],
+  ["optimizes in subscripts", sub(a, onePlusTwo), sub(a, 3)],
   ["optimizes in array literals", array(0, onePlusTwo, 9), array(0, 3, 9)],
   ["optimizes in arguments", callIdentity([times(3, 5)]), callIdentity([15])],
   [

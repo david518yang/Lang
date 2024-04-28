@@ -69,7 +69,7 @@ const semanticChecks = [
     ['class declaration', 'class Dog { name:string; age:int;};'],
     // ['member exp', 'struct S {x: int} let y = S(1);print(y.x);'],
     // ['optional member exp', 'struct S {x: int} let y = some S(1);print(y?.x);'],
-    // ['subscript exp', 'let a=[1,2];print(a[0]);'],
+    ['subscript exp', 'auto a=[1,2];print a[0];'],
     // ['array of struct', 'struct S{} let x=[S(), S()];'],
     // ['struct of arrays and opts', 'struct S{x: [int] y: string??}'],
     // ['assigned functions', 'function f() {}\nlet g = f;g = f;'],
