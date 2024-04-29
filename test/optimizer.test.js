@@ -94,7 +94,14 @@ const tests = [
   ["optimizes whileStatement", core.whileStatement(true, [returnX]), core.whileStatement(true, [returnX])],
   ["optimizes shortReturnStatement", core.shortReturnStatement(), core.shortReturnStatement()], 
   ["optimizes ForRangeStatement", core.forRangeStatement(x, 2, "..", 5, [returnX]), core.forRangeStatement(x, 2, "..", 5, [returnX])],
-  ["optimizes ForRangeStatement where low is greater than high", core.forRangeStatement(x, 5, "..", 2, [returnX]), []],
+  ["optimizes forStatement with empty array", core.forStatement(x, emptyArray, [returnX]), []],
+  ["optimizes forStatement", core.forStatement(x, array(1, 2, 3), [returnX]), core.forStatement(x, array(1, 2, 3), [returnX])],
+  ["optimizes conditional", core.conditional(x, 1, 2), core.conditional(x, 1, 2)],
+  ["optimizes negation", core.negation("-", x), core.negation("-", x)],
+  ["optimizes ForRangeStatement with low greater than high, returns empty array",
+  core.forRangeStatement(x, 5, "..", 2, [returnX]),
+  []
+],
 ]
 
 describe("The optimizer", () => {
