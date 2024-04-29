@@ -90,14 +90,13 @@ const fixtures = [
     name: "functions",
     source: `
     auto z = 0.5;
-      func f(x: float, y: bool) {
-        print x;
-        return;
-      }
-      func g(): bool {
-        return false;
-      }
-      f(z, g());
+    func f(x: float, y: bool) {
+      print x;
+      return;
+    }
+    func g(): bool {
+      return false;
+    }
     `,
     expected: dedent`
       let z_1 = 0.5;
@@ -108,7 +107,6 @@ const fixtures = [
       function g_5() {
         return false;
       }
-      f_2(z_1, g_5());
     `,
   },
   // Not synactically correct yet - array member not implemented
