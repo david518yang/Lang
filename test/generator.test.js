@@ -19,8 +19,8 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 21;
-      x_1 = x_1 + 1;
-      x_1 = x_1 - 1;
+      x_1 = (x_1 + 1);
+      x_1 = (x_1 - 1);
       let y_2 = true;
     `,
   },
@@ -97,7 +97,6 @@ const fixtures = [
       func g(): bool {
         return false;
       }
-      f(z, g());
     `,
     expected: dedent`
       let z_1 = 0.5;

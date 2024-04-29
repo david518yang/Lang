@@ -84,7 +84,7 @@ export function returnStatement(expression) {
 }
 
 export function shortReturnStatement() {
-    return { kind: 'shortreturnStatement' }
+    return { kind: 'shortReturnStatement' }
 }
 
 export function ifStatement(test, consequent, alternate) {
