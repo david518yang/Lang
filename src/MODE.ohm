@@ -3,7 +3,7 @@ MODE {
     Stmt        = VarDecl 
                 | Assignment
                 | FunDecl
-                | Primary_call ";"                                 --call
+                | Primary_call ";"                       --call
                 | Print
                 | IfStmt
                 | LoopStmt
@@ -13,7 +13,7 @@ MODE {
                 | return ";"                            --shortreturn
     
     VarDecl     = auto id "=" Exp ";"                   --inference
-                | Type id "=" Exp ";"                  --type
+                | Type id "=" Exp ";"                   --type
     Assignment  = Primary_id "=" Exp ";"
     Print       = print Exp ";"
     IfStmt      = if Exp Block else Block                 --long
@@ -21,21 +21,21 @@ MODE {
                 | if Exp Block                            --short
     LoopStmt    = WhileStmt | ForStmt
     WhileStmt   = while Exp Block
-    ForStmt     = for id in Exp Block               --iterable
+    ForStmt     = for id in Exp Block                      --iterable
                 | for id in Exp ".." Exp Block             --range
     Block       = "{" Stmt+ "}"
     BreakStmt   = break ";"
     Ternary     = if "(" Exp ")" yield Exp otherwise Exp
-    Lambda      = "(" (id ",")* id ")" "->" Exp     --lambda
+    Lambda      = "(" (id ",")* id ")" "->" Exp            --lambda
     ClassDef    = class id "{" Field* "}" ";"
     Field       = id ":" Type ";"
     FunDecl     = func id Params (":" Type)? Block
   	Params      = "(" ListOf<Param, ","> ")"
  	Param       = id ":" Type
     
-    Type        = Type "[" "]"                      --arr
-                | types                             --primitive
-                | id                                --id
+    Type        = Type "[" "]"                       --arr
+                | types                              --primitive
+                | id                                 --id
     Exp         = Ternary
                 | Exp0
     Exp0        = Exp1 relop Exp1                   --comparison

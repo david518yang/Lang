@@ -66,6 +66,13 @@ const tests = [
   ["optimizes ConstructorCall", core.constructorCall(identity, [times(3, 5)]), core.constructorCall(identity, [15])],
   ["optimizes MemberExpression", core.memberExpression(core.constructorCall(identity, [times(3, 5)]), ".", "f"), core.memberExpression(core.constructorCall(identity, [15]), ".", "f")],
   ["optimizes assignments return brackets", core.program([assign(x, core.binary("+", x, 1)), returnX]), core.program([assign(x, core.binary("+", x, 1)), returnX])],
+  ["optimizes assignments", core.program([assign(x, core.binary("+", x, 0)), returnX]), core.program([returnX])],
+  ["optimizes assignments return null", core.program([assign(x, core.binary("+", x, 0)), return1p1]), core.program([return2])],
+  ["optimizes ifStatement with alternate", core.ifStatement(eq(x, 0), [return1p1], [return2]), core.ifStatement(eq(x, 0), [return1p1], [return2])],
+  ["optimizes ifStatement with Boolean test and both consequent and alternate branches", core.ifStatement(true, [returnX], [return1p1]), [returnX]],
+  ["optimizes shortIfStatement with Boolean test and both consequent and alternate branches", core.shortIfStatement(true, [returnX]), [returnX]],
+  ["optimizes whileStatement no-op", core.whileStatement(true, []), core.whileStatement(true, [])],
+  ["optimizes whileStatement with false test", core.whileStatement(false, [returnX]), []],
   [
     "passes through nonoptimizable constructs",
     ...Array(2).fill([
@@ -85,7 +92,9 @@ const tests = [
     ]),
   ],
   ["optimizes whileStatement", core.whileStatement(true, [returnX]), core.whileStatement(true, [returnX])],
-  ["optimizes shortReturnStatement", core.shortReturnStatement(), core.shortReturnStatement()],  
+  ["optimizes shortReturnStatement", core.shortReturnStatement(), core.shortReturnStatement()], 
+  ["optimizes ForRangeStatement", core.forRangeStatement(x, 2, "..", 5, [returnX]), core.forRangeStatement(x, 2, "..", 5, [returnX])],
+  ["optimizes ForRangeStatement where low is greater than high", core.forRangeStatement(x, 5, "..", 2, [returnX]), []],
 ]
 
 describe("The optimizer", () => {
