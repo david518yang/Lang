@@ -18,14 +18,13 @@ const and = (...c) => c.reduce((x, y) => core.binary("&&", x, y))
 const less = (x, y) => core.binary("<", x, y)
 const eq = (x, y) => core.binary("==", x, y)
 const times = (x, y) => core.binary("*", x, y)
-const neg = x => core.unary("-", x)
+const neg = x => core.negation("-", x)
 const array = (...elements) => core.arrayExpression(elements)
 const assign = (v, e) => core.assignment(v, e)
 const emptyArray = core.emptyArray(core.intType)
 const sub = (a, e) => core.subscript(a, e)
 const unwrapElse = (o, e) => core.binary("??", o, e)
 const emptyOptional = core.emptyOptional(core.intType)
-const some = x => core.unary("some", x)
 const program = core.program
 
 const tests = [
@@ -50,7 +49,7 @@ const tests = [
   ["optimizes 0+", core.binary("+", 0, x), x],
   ["optimizes 0-", core.binary("-", 0, x), neg(x)],
   ["optimizes 1*", core.binary("*", 1, x), x],
-  ["folds negation", core.unary("-", 8), -8],
+  ["folds negation", core.negation("-", 8), -8],
   ["optimizes 1**", core.binary("**", 1, x), 1],
   ["optimizes **0", core.binary("**", x, 0), 1],
   ["removes left false from ||", or(false, less(x, 1)), less(x, 1)],
@@ -66,19 +65,19 @@ const tests = [
   ["optimizes in arguments", callIdentity([times(3, 5)]), callIdentity([15])],
   ["optimizes ConstructorCall", core.constructorCall(identity, [times(3, 5)]), core.constructorCall(identity, [15])],
   ["optimizes MemberExpression", core.memberExpression(core.constructorCall(identity, [times(3, 5)]), ".", "f"), core.memberExpression(core.constructorCall(identity, [15]), ".", "f")],
+  ["optimizes assignments return brackets", core.program([assign(x, core.binary("+", x, 1)), returnX]), core.program([assign(x, core.binary("+", x, 1)), returnX])],
   [
     "passes through nonoptimizable constructs",
     ...Array(2).fill([
       core.program([core.shortReturnStatement()]),
       core.variableDeclaration("x", true, "z"),
       core.assignment(x, core.binary("*", x, "z")),
-      core.assignment(x, core.unary("not", x)),
+      core.assignment(x, core.negation("not", x)),
       core.constructorCall(identity, core.memberExpression(x, ".", "f")),
       core.variableDeclaration("q", false, core.emptyArray(core.floatType)),
       core.variableDeclaration("r", false, core.emptyOptional(core.intType)),
       core.whileStatement(true, [core.breakStatement]),
       core.conditional(x, 1, 2),
-      unwrapElse(some(x), 7),
       core.ifStatement(x, [], []),
       core.shortIfStatement(x, []),
       core.forRangeStatement(x, 2, "..", 5, []),
@@ -86,6 +85,7 @@ const tests = [
     ]),
   ],
   ["optimizes whileStatement", core.whileStatement(true, [returnX]), core.whileStatement(true, [returnX])],
+  ["optimizes shortReturnStatement", core.shortReturnStatement(), core.shortReturnStatement()],  
 ]
 
 describe("The optimizer", () => {

@@ -157,7 +157,7 @@ const optimizers = {
         else if (e.op === ">") return e.left > e.right
       } else if (e.left === 0 && e.op === "+") return e.right
       else if (e.left === 1 && e.op === "*") return e.right
-      else if (e.left === 0 && e.op === "-") return core.unary("-", e.right)
+      else if (e.left === 0 && e.op === "-") return core.negation("-", e.right)
       else if (e.left === 1 && e.op === "**") return 1
       else if (e.left === 0 && ["*", "/"].includes(e.op)) return 0
     } else if ([Number, BigInt].includes(e.right.constructor)) {
@@ -169,7 +169,7 @@ const optimizers = {
     }
     return e
   },
-  UnaryExpression(e) {
+  NegationExpression(e) {
     e.op = optimize(e.op)
     e.operand = optimize(e.operand)
     if (e.operand.constructor === Number) {

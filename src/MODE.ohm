@@ -9,8 +9,8 @@ MODE {
                 | LoopStmt
                 | BreakStmt
                 | ClassDef
-                | return ";"                            --shortreturn
                 | return Exp ";"                        --return
+                | return ";"                            --shortreturn
     
     VarDecl     = auto id "=" Exp ";"                   --inference
                 | Type id "=" Exp ";"                  --type

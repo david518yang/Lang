@@ -189,8 +189,8 @@ export default function analyze(match) {
                 return 'string'
             case 'BoolType':
                 return 'boolean'
-            case 'AnyType':
-                return 'any'
+            // case 'AnyType':
+            //     return 'any'
             case 'ClassType':
                 return type.name
             case 'ArrayType':
@@ -558,6 +558,13 @@ export default function analyze(match) {
                 mustHaveNumericType(left, { at: exp1 })
                 mustBothHaveTheSameType(left, right, { at: mulOp })
                 return core.binary(op, left, right, left.type)
+            },
+
+            Factor_negation(unaryOp, exp) {
+                const [op, operand] = [unaryOp.sourceString, exp.rep()]
+                mustHaveNumericType(operand, { at: exp })
+                let type = operand.type
+                return core.negation(op, operand, type)
             },
 
             Primary_emptyarray(ty, _open, _close) {

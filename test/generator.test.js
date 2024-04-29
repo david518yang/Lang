@@ -89,14 +89,15 @@ const fixtures = [
   {
     name: "functions",
     source: `
-    auto z = 0.5;
-    func f(x: float, y: bool) {
-      print x;
-      return;
-    }
-    func g(): bool {
-      return false;
-    }
+      auto z = 0.5;
+      func f(x: float, y: bool) {
+        print x;
+        return;
+      }
+      func g(): bool {
+        return false;
+      }
+      f(z, g());
     `,
     expected: dedent`
       let z_1 = 0.5;

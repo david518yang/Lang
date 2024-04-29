@@ -130,6 +130,7 @@ const semanticChecks = [
         'type description for array type',
         'int[] arr = [1, 2, 3]; arr = [2, 3, 4];',
     ],
+    ['unary negation', 'auto x = -5;']
 ]
 
 // Programs that are syntactically correct but have semantic errors
