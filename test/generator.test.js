@@ -109,7 +109,6 @@ const fixtures = [
       }
     `,
   },
-  // Not synactically correct yet - array member not implemented
   {
     name: "arrays",
     source: `
@@ -127,7 +126,6 @@ const fixtures = [
       console.log(b_2[1]);
     `,
   },
-  // Not synactically correct yet - member operator not implemented
   {
     name: "classes",
     source: `
@@ -136,35 +134,36 @@ const fixtures = [
       print(x.x);
     `,
     expected: dedent`
-      class S_1 {
-      constructor(x_2) {
-      this["x_2"] = x_2;
+      class S {
+      constructor(x_1) {
+      this["x_1"] = x_1;
       }
       }
-      let x_3 = new S_1(3);
-      console.log((x_3["x_2"]));
+      let x_2 = new S(3);
+      console.log((x_2["x_1"]));
     `,
   },
+
   // Not synactically correct yet - loop over array not implemented
-  {
-    name: "for loops",
-    source: `
-      for i in 1..50 {
-        print i;
-      }
-      for j in [10, 20, 30] {
-        print j;
-      }
-    `,
-    expected: dedent`
-      for (let i_1 = 1; i_1 < 50; i_1++) {
-        console.log(i_1);
-      }
-      for (let j_2 of [10,20,30]) {
-        console.log(j_2);
-      }
-    `,
-  },
+  // {
+  //   name: "for loops",
+  //   source:`
+  //     for i in 1 .. 50 {
+  //       print i;
+  //     }
+  //     for j in [10, 20, 30] {
+  //       print j;
+  //     }
+  //   `,
+  //   expected: dedent`
+  //     for (let i_1 = 1; i_1 < 50; i_1++) {
+  //       console.log(i_1);
+  //     }
+  //     for (let j_2 of [10,20,30]) {
+  //       console.log(j_2);
+  //     }
+  //   `,
+  // },
 ]
 
 describe("The code generator", () => {

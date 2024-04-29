@@ -75,8 +75,8 @@ export function forStatement(iterator, collection, body) {
     return { kind: 'ForStatement', iterator, collection, body }
 }
 
-export function forRangeStatement(variable, start, end, body) {
-    return { kind: 'ForRangeStatement', variable, start, end, body }
+export function forRangeStatement(iterator, start, op, end, body) {
+    return { kind: 'ForRangeStatement', iterator, start, op, end, body }
 }
 
 export function returnStatement(expression) {
@@ -84,7 +84,7 @@ export function returnStatement(expression) {
 }
 
 export function shortReturnStatement() {
-    return { kind: 'shortReturnStatement' }
+    return { kind: 'ShortReturnStatement' }
 }
 
 export function ifStatement(test, consequent, alternate) {

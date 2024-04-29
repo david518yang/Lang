@@ -384,28 +384,6 @@ export default function analyze(match) {
                 return entity
             },
 
-            // Type_lambda(_left, params, _right, _arrow, returnType) {
-            //     const paramTypes = params
-            //         .asIteration()
-            //         .children.map((p) => p.rep())
-            //     const returnTypeType = returnType.rep()
-            //     return core.functionType(paramTypes, returnTypeType)
-            // },
-
-            // Type_function(_left, types, _right, _arrow, type) {
-            //     const paramTypes = types
-            //         .asIteration()
-            //         .children.map((t) => t.rep())
-            //     const returnType = type.rep()
-            //     return core.functionType(paramTypes, returnType)
-            // },
-            // Type_classtype(id) {
-            //     const entity = context.lookup(id.sourceString)
-            //     mustHaveBeenFound(entity, id.sourceString, { at: id })
-            //     mustBeAType(entity, { at: id })
-            //     return entity
-            // },
-
             Stmt_call(call, _semicolon) {
                 return call.rep()
             },
@@ -507,6 +485,7 @@ export default function analyze(match) {
             },
 
             ForStmt_range(_for, id, _in, exp1, op, exp2, block) {
+                //console.log("exp1", exp1)
                 const [low, high] = [exp1.rep(), exp2.rep()]
                 mustHaveIntegerType(low, { at: exp1 })
                 mustHaveIntegerType(high, { at: exp2 })
@@ -515,7 +494,7 @@ export default function analyze(match) {
                 context.add(id.sourceString, iterator)
                 const body = block.rep()
                 context = context.parent
-                return core.forRangeStatement(iterator, low, high, body)
+                return core.forRangeStatement(iterator, low, op, high, body)
             },
 
             Block(_open, statements, _close) {
@@ -578,10 +557,6 @@ export default function analyze(match) {
                 mustAllHaveSameType(elements, { at: args })
                 return core.arrayExpression(elements)
             },
-
-            // Primary_emptyopt(_no, type) {
-            //     return core.emptyOptional(type.rep())
-            // },
 
             Primary_parens(_open, expression, _close) {
                 return expression.rep()

@@ -42,7 +42,7 @@ export default function generate(program) {
     },
     TypeDeclaration(d) {
       // The only type declaration in Carlos is the struct! Becomes a JS class.
-      output.push(`class ${gen(d.type)} {`)
+      output.push(`class ${gen(d.type.name)} {`)
       output.push(`constructor(${d.type.fields.map(gen).join(",")}) {`)
       for (let field of d.type.fields) {
         output.push(`this[${JSON.stringify(gen(field))}] = ${gen(field)};`)
@@ -160,10 +160,10 @@ export default function generate(program) {
       output.push(`${targetCode};`)
     },
     ConstructorCall(c) {
-      return `new ${gen(c.callee)}(${c.args.map(gen).join(", ")})`
+      return `new ${gen(c.callee.name)}(${c.args.map(gen).join(", ")})`
     },
   }
-
+  
   gen(program)
   return output.join("\n")
 }
