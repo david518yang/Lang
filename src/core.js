@@ -107,8 +107,8 @@ export function binary(op, left, right, type) {
     return { kind: 'BinaryExpression', op, left, right, type }
 }
 
-export function unary(op, operand, type) {
-    return { kind: 'UnaryExpression', op, operand, type }
+export function negation(op, operand, type) {
+    return { kind: 'NegationExpression', op, operand, type }
 }
 
 export function emptyOptional(baseType) {

@@ -89,7 +89,7 @@ const fixtures = [
   {
     name: "functions",
     source: `
-    auto z = 0.5;
+      auto z = 0.5;
       func f(x: float, y: bool) {
         print x;
         return;

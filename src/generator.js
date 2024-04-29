@@ -50,9 +50,9 @@ export default function generate(program) {
       output.push("}")
       output.push("}")
     },
-    StructType(t) {
-      return targetName(t)
-    },
+    // StructType(t) {
+    //   return targetName(t)
+    // },
     Field(f) {
       return targetName(f)
     },
@@ -116,22 +116,15 @@ export default function generate(program) {
       s.body.forEach(gen)
       output.push("}")
     },
-    Conditional(e) {
-      return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
-    },
+    // Conditional(e) {
+    //   return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
+    // },
     BinaryExpression(e) {
       const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op
       return `(${gen(e.left)} ${op} ${gen(e.right)})`
     },
-    UnaryExpression(e) {
+    NegationExpression(e) {
       const operand = gen(e.operand)
-      if (e.op === "some") {
-        return operand
-      } else if (e.op === "#") {
-        return `${operand}.length`
-      } else if (e.op === "random") {
-        return `((a=>a[~~(Math.random()*a.length)])(${operand}))`
-      }
       return `${e.op}(${operand})`
     },
     SubscriptExpression(e) {
