@@ -76,7 +76,7 @@ export function forStatement(iterator, collection, body) {
 }
 
 export function forRangeStatement(iterator, start, op, end, body) {
-    return { kind: 'forRangeStatement', iterator, start, op, end, body };
+    return { kind: 'ForRangeStatement', iterator, start, op, end, body };
 }
 
 
