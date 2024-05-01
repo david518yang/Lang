@@ -143,6 +143,26 @@ const fixtures = [
       console.log((x_2["x_1"]));
     `,
   },
+  {
+    name: "function calls",
+    source: `
+      func f(x:int, y:int): void {
+        print x + y;
+      }
+      f(3, 4);
+    `,
+    expected: dedent`
+      function f_1(x_2, y_3) {
+        console.log(x_2 + y_3);
+      }
+      f_1(3, 4);
+    `,
+  }
+  
+  
+  
+  
+
 
   // Not synactically correct yet - loop over array not implemented
   // {

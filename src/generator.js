@@ -149,16 +149,7 @@ export default function generate(program) {
       const chain = e.op === "." ? "" : e.op
       return `(${object}${chain}[${field}])`
     },
-    FunctionCall(c) {
-      const targetCode = standardFunctions.has(c.callee)
-        ? standardFunctions.get(c.callee)(c.args.map(gen))
-        : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`
-      // Calls in expressions vs in statements are handled differently
-      if (c.callee.type.returnType !== voidType) {
-        return targetCode
-      }
-      output.push(`${targetCode};`)
-    },
+    
     ConstructorCall(c) {
       return `new ${gen(c.callee.name)}(${c.args.map(gen).join(", ")})`
     },
