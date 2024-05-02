@@ -455,7 +455,7 @@ export default function analyze(match) {
             ) {
                 return core.conditional(
                     test.rep(),
-                    consequent.rep(),
+                    consequent.rep(),1,
                     alternate.rep()
                 )
             },

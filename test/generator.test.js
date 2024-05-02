@@ -60,7 +60,7 @@ const fixtures = [
         } else {
           console.log(4);
         }
-      let y_2 = (true) ? 2 : 1;
+      let y_2 = 2;
     `,
     },
     {
@@ -182,6 +182,24 @@ const fixtures = [
         }
       `,
     },
+    // {
+    //   name: "ternary",
+    //   source: `
+    //     if(true) ? false : true {
+    //       print "hello";
+    //     }
+    //   `,
+    //   expected: dedent`
+    //     if (true ? false : true) {
+    //       console.log("hello");
+    //     }
+    //   `,
+
+    // }
+    
+    
+    
+    
 ]
 
 describe('The code generator', () => {

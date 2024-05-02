@@ -73,6 +73,14 @@ const tests = [
   ["optimizes shortIfStatement with Boolean test and both consequent and alternate branches", core.shortIfStatement(true, [returnX]), [returnX]],
   ["optimizes whileStatement no-op", core.whileStatement(true, []), core.whileStatement(true, [])],
   ["optimizes whileStatement with false test", core.whileStatement(false, [returnX]), []],
+  ["optimizes ifStatement with boolean test, no alternate", core.ifStatement(true, [returnX], []), [returnX]],
+  ["optimizes ifStatement alternate", core.ifStatement(eq(x, 0), [return1p1], [return2]), core.ifStatement(eq(x, 0), [return1p1], [return2])],
+  ["optimizes ifStatement with boolean test and alternate", core.ifStatement(true, [returnX], [return1p1]), [returnX]],
+  ["optimizes shortIfStatement with boolean test, no alternate", core.shortIfStatement(true, [returnX]), [returnX]],
+  ["optimizes ifStatement with test not being a Boolean",
+    core.ifStatement(x, [returnX], [return1p1]), // `x` is not a Boolean
+    core.ifStatement(x, [returnX], [return1p1]) // No optimization, returns the original statement
+  ],
   [
     "passes through nonoptimizable constructs",
     ...Array(2).fill([
@@ -98,10 +106,14 @@ const tests = [
   ["optimizes forStatement", core.forStatement(x, array(1, 2, 3), [returnX]), core.forStatement(x, array(1, 2, 3), [returnX])],
   ["optimizes conditional", core.conditional(x, 1, 2), core.conditional(x, 1, 2)],
   ["optimizes negation", core.negation("-", x), core.negation("-", x)],
-//   ["optimizes ForRangeStatement with low greater than high, returns empty array",
-//   core.forRangeStatement(x, 5, "..", 2, [returnX]),
-//   []
-// ],
+  ["optimizes ForRangeStatement with low greater than high, returns empty array",
+  core.forRangeStatement(x, 5, "..", 2, [returnX]),
+  []
+  ],
+  ["short ifStatement with boolean test, no alternate", core.shortIfStatement(true, [returnX]), [returnX]],
+  ["optimizes ifStatement with boolean test, no alternate", core.ifStatement(true, [returnX], []), [returnX]],
+  ["optimizes short ifStatement with boolean test", core.shortIfStatement(true, [returnX]), [returnX]],
+  ["optimizes short ifStatement with test not being a Boolean", core.shortIfStatement(x, [returnX]), core.shortIfStatement(x, [returnX])],
 ]
 
 describe("The optimizer", () => {

@@ -1,23 +1,13 @@
-// The code generator exports a single function, generate(program), which
-// accepts a program representation and returns the JavaScript translation
-// as a string.
-
 import { voidType, standardLibrary } from './core.js'
 
 export default function generate(program) {
-    // When generating code for statements, we'll accumulate the lines of
-    // the target code here. When we finish generating, we'll join the lines
-    // with newlines and return the result.
+
     const output = []
 
     const standardFunctions = new Map([
         [standardLibrary.print, (x) => `console.log(${x})`],
     ])
 
-    // Variable and function names in JS will be suffixed with _1, _2, _3,
-    // etc. This is because "switch", for example, is a legal name in Carlos,
-    // but not in JS. So, the Carlos variable "switch" must become something
-    // like "switch_1". We handle this by mapping each name to its suffix.
     const targetName = ((mapping) => {
         return (entity) => {
             if (!mapping.has(entity)) {
@@ -30,18 +20,13 @@ export default function generate(program) {
     const gen = (node) => generators?.[node?.kind]?.(node) ?? node
 
     const generators = {
-        // Key idea: when generating an expression, just return the JS string; when
-        // generating a statement, write lines of translated JS to the output array.
         Program(p) {
             p.statements.forEach(gen)
         },
         VariableDeclaration(d) {
-            // We don't care about const vs. let in the generated code! The analyzer has
-            // already checked that we never updated a const, so let is always fine.
             output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`)
         },
         TypeDeclaration(d) {
-            // The only type declaration in Carlos is the struct! Becomes a JS class.
             output.push(`class ${gen(d.type.name)} {`)
             output.push(`constructor(${d.type.fields.map(gen).join(',')}) {`)
             for (let field of d.type.fields) {
@@ -52,9 +37,6 @@ export default function generate(program) {
             output.push('}')
             output.push('}')
         },
-        // StructType(t) {
-        //   return targetName(t)
-        // },
         Field(f) {
             return targetName(f)
         },
@@ -128,11 +110,11 @@ export default function generate(program) {
             s.body.forEach(gen)
             output.push('}')
         },
-        Conditional(e) {
-            return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(
-                e.alternate
-            )}))`
+        Ternary(e) {
+            return `(${gen(e.test)} ? ${gen(e.consequent)} : ${gen(e.alternate)})`;
         },
+        
+        
         BinaryExpression(e) {
             const op = { '==': '===', '!=': '!==' }[e.op] ?? e.op
             return `(${gen(e.left)} ${op} ${gen(e.right)})`

@@ -1,24 +1,3 @@
-// The optimizer module exports a single function, optimize(node), to perform
-// machine-independent optimizations on the analyzed semantic representation.
-//
-// The only optimizations supported here are:
-//
-//   - assignments to self (x = x) turn into no-ops
-//   - constant folding
-//   - some strength reductions (+0, -0, *0, *1, etc.)
-//   - turn references to built-ins true and false to be literals
-//   - remove all disjuncts in || list after literal true
-//   - remove all conjuncts in && list after literal false
-//   - while-false becomes a no-op
-//   - repeat-0 is a no-op
-//   - for-loop over empty array is a no-op
-//   - for-loop with low > high is a no-op
-//   - if-true and if-false reduce to only the taken arm
-//
-// The optimizer also replaces token references with their actual values,
-// since the original token line and column numbers are no longer needed.
-// This simplifies code generation.
-
 import * as core from "./core.js"
 
 export default function optimize(node) {
@@ -100,14 +79,8 @@ const optimizers = {
     s.op = optimize(s.op)
     s.end = optimize(s.end)
     s.body = s.body.flatMap(optimize)
-    // console.log(s.start)
-    // console.log(s.end)
-    if (s.start === Number) {
-      if (s.end === Number) {
-        if (s.start > s.end) {
-          return []
-        }
-      }
+    if (s.start > s.end) {
+        return []
     }
     return s
   },
@@ -165,7 +138,6 @@ const optimizers = {
       else if (e.left === 1 && e.op === "**") return 1
       else if (e.left === 0 && ["*", "/"].includes(e.op)) return 0
     } else if ([Number, BigInt].includes(e.right.constructor)) {
-      // Numeric constant folding when right operand is constant
       if (["+", "-"].includes(e.op) && e.right === 0) return e.left
       else if (["*", "/"].includes(e.op) && e.right === 1) return e.left
       else if (e.op === "*" && e.right === 0) return 0
