@@ -16,12 +16,14 @@ const fixtures = [
       x = x + 1;
       x = x - 1;
       auto y = true;
+      auto z = -2;
     `,
         expected: dedent`
       let x_1 = 21;
       x_1 = (x_1 + 1);
       x_1 = (x_1 - 1);
       let y_2 = true;
+      let z_3 = -2;
     `,
     },
     {
@@ -32,6 +34,7 @@ const fixtures = [
       if x == 0 { print 1; } else { print 2; }
       if x == 0 { print 1; } else if x == 2 { print 3; }
       if x == 0 { print 1; } else if x == 2 { print 3; } else { print 4; }
+      auto y = if (true) yield 2 otherwise 1;
     `,
         expected: dedent`
       let x_1 = 0;
@@ -57,6 +60,7 @@ const fixtures = [
         } else {
           console.log(4);
         }
+      let y_2 = (true) ? 2 : 1;
     `,
     },
     {
@@ -170,7 +174,7 @@ const fixtures = [
         }
       `,
         expected: dedent`
-        for (let i_1 = 1; i_1 < 50; i_1++) {
+        for (let i_1 = 1; i_1 <= 50; i_1++) {
           console.log(i_1);
         }
         for (let j_2 of [10,20,30]) {
