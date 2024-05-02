@@ -1,0 +1,4 @@
+auto a = [true, false, true];
+auto b = [10, a - 20, 30];
+c = int[]();
+print a[1];

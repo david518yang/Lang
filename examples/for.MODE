@@ -1,1 +1,10 @@
 for i in 1..5 {print i;}
+
+for num in 6 {
+	if num < 6 {
+    	auto num = num + 1;
+    }
+    else {
+    	print num;
+    }
+}

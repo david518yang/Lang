@@ -1,0 +1,13 @@
+func tree(num: int) {
+    for num in 1..4 {
+        num = num + num;
+    }
+    return num;
+}
+
+print tree(1);
+
+func greet(name: string) { 
+	print "Hello, " + name;
+} 
+greet("World");
