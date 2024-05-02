@@ -1,0 +1,6 @@
+      func f(x:int, y:int): void {
+        print x + y;
+      }
+      f(3, 4);
+      print f(3, 4);
+
