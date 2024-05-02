@@ -1,5 +1,5 @@
 MODE {
-	Program     = Stmt+
+    Program     = Stmt+
     Stmt        = VarDecl 
                 | Assignment
                 | FunDecl
@@ -30,8 +30,8 @@ MODE {
     ClassDef    = class id "{" Field* "}" ";"
     Field       = id ":" Type ";"
     FunDecl     = func id Params (":" Type)? Block
-  	Params      = "(" ListOf<Param, ","> ")"
- 	Param       = id ":" Type
+    Params      = "(" ListOf<Param, ","> ")"
+    Param       = id ":" Type
     
     Type        = Type "[" "]"                       --arr
                 | types                              --primitive
@@ -62,13 +62,13 @@ MODE {
     
     relop       = "<=" | "<" | "==" | "!=" | ">=" | ">"
     int         = digit+
-    float        = digit+ ("." digit+) (("E" | "e") ("+" | "-")? digit+)?
-    string		= "\"" char* "\""
-    char		= ~"\\" ~"\"" any							--normalchars
-    			| "\\" ("'" | "\"" | "n" | "\\") 			--escape
-    			| "\\u{" hex? hex? hex? hex? hex? hex? "}"	--hex
+    float       = digit+ ("." digit+) (("E" | "e") ("+" | "-")? digit+)?
+    string      = "\"" char* "\""
+    char        = ~"\\" ~"\"" any							--normalchars
+                | "\\" ("'" | "\"" | "n" | "\\") 			--escape
+                | "\\u{" hex? hex? hex? hex? hex? hex? "}"	--hex
                 | "%{"id"}"                                 --stringinterpolation
-    hex			= hexDigit
+    hex         = hexDigit
     mut         = ~"==" "=" | "++" | "--"
 
     print       = "print" ~idchar

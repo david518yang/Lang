@@ -139,8 +139,8 @@ const fixtures = [
       this["x_1"] = x_1;
       }
       }
-      let x_3 = new S_1(3);
-      console.log((x_3["x_2"]));
+      let x_2 = new S(3);
+      console.log((x_2["x_1"]));
     `,
     },
     {
