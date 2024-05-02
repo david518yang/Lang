@@ -119,8 +119,8 @@ export default function generate(program) {
             const op = { '==': '===', '!=': '!==' }[e.op] ?? e.op
             return `(${gen(e.left)} ${op} ${gen(e.right)})`
         },
-        // NegationExpression(e) {
-        //     const operand = gen(e.operand)
+        NegationExpression(e) {
+            const operand = gen(e.operand)
         //     // if (e.op === 'some') {
         //     //     return operand
         //     // } else if (e.op === '#') {
@@ -128,8 +128,8 @@ export default function generate(program) {
         //     // } else if (e.op === 'random') {
         //     //     return `((a=>a[~~(Math.random()*a.length)])(${operand}))`
         //     // }
-        //     return `${e.op}${operand}`
-        // },
+            return `${e.op}${operand}`
+        },
         SubscriptExpression(e) {
             return `${gen(e.array)}[${gen(e.index)}]`
         },
