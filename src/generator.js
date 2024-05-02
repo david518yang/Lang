@@ -113,10 +113,9 @@ export default function generate(program) {
         },
         ForRangeStatement(s) {
             const i = targetName(s.iterator)
-            const op = s.op === '..'
             output.push(
-                `for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(
-                    s.high
+                `for (let ${i} = ${gen(s.start)}; ${i} <= ${gen(
+                    s.end
                 )}; ${i}++) {`
             )
             s.body.forEach(gen)
