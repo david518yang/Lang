@@ -142,7 +142,7 @@ export default function generate(program) {
         MemberExpression(e) {
             const object = gen(e.object)
             const field = JSON.stringify(gen(e.field))
-            const chain = e.op === '.' ? '' : e.op
+            const chain = '.'
             return `(${object}${chain}[${field}])`
         },
         FunctionCall(c) {
