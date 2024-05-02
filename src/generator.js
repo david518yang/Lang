@@ -111,7 +111,7 @@ export default function generate(program) {
             output.push('}')
         },
         Ternary(e) {
-            return `(${gen(e.test)} ? ${gen(e.consequent)} : ${gen(e.alternate)})`;
+            return `${gen(e.test)} ? ${gen(e.consequent)} : ${gen(e.alternate)}`;
         },
         
         
@@ -159,11 +159,3 @@ export default function generate(program) {
     gen(program)
     return output.join('\n')
 }
-
-//IN CORE NOT IN GENERATOR
-//classtype
-//functype
-//arraytype
-//optionaltype
-//negation(unary)
-//emptyoptional

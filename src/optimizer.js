@@ -84,7 +84,7 @@ const optimizers = {
     }
     return s
   },
-  Conditional(e) {
+  Ternary(e) {
     e.test = optimize(e.test)
     e.consequent = optimize(e.consequent)
     e.alternate = optimize(e.alternate)

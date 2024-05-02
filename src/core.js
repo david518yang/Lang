@@ -99,8 +99,8 @@ export function whileStatement(test, body) {
     return { kind: 'WhileStatement', test, body }
 }
 
-export function conditional(test, consequent, alternate, type) {
-    return { kind: 'Conditional', test, consequent, alternate, type }
+export function ternary(test, consequent, alternate, type) {
+    return { kind: 'Ternary', test, consequent, alternate, type }
 }
 
 export function binary(op, left, right, type) {

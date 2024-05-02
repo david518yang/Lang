@@ -453,10 +453,10 @@ export default function analyze(match) {
                 _otherwise,
                 alternate
             ) {
-                return core.conditional(
+                return core.ternary(
                     test.rep(),
-                    consequent.rep(),1,
-                    alternate.rep()
+                    consequent.rep(),
+                    alternate.rep(),1
                 )
             },
 

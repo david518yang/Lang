@@ -182,20 +182,16 @@ const fixtures = [
         }
       `,
     },
-    // {
-    //   name: "ternary",
-    //   source: `
-    //     if(true) ? false : true {
-    //       print "hello";
-    //     }
-    //   `,
-    //   expected: dedent`
-    //     if (true ? false : true) {
-    //       console.log("hello");
-    //     }
-    //   `,
+    {
+      name: "ternary",
+      source: `
+        print if (true) yield false otherwise true;
+      `,
+      expected: dedent`
+        console.log(true ? false : true);
+      `,
 
-    // }
+    }
     
     
     
