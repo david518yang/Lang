@@ -23,7 +23,7 @@ export const intType = { kind: 'IntType' }
 export const floatType = { kind: 'FloatType' }
 export const stringType = { kind: 'StringType' }
 export const anyType = { kind: 'AnyType' }
-export const voidType = { kind: "VoidType" }
+export const voidType = { kind: 'VoidType' }
 
 export function classType(name, fields) {
     return { kind: 'ClassType', name, fields }
@@ -76,9 +76,8 @@ export function forStatement(iterator, collection, body) {
 }
 
 export function forRangeStatement(iterator, start, op, end, body) {
-    return { kind: 'forRangeStatement', iterator, start, op, end, body };
+    return { kind: 'ForRangeStatement', iterator, start, op, end, body }
 }
-
 
 export function returnStatement(expression) {
     return { kind: 'ReturnStatement', expression }
@@ -117,11 +116,20 @@ export function emptyOptional(baseType) {
 }
 
 export function subscript(array, index) {
-    return { kind: "SubscriptExpression", array, index, type: array.type.baseType }
-  }
+    return {
+        kind: 'SubscriptExpression',
+        array,
+        index,
+        type: array.type.baseType,
+    }
+}
 
 export function memberExpression(object, op, field) {
     return { kind: 'MemberExpression', object, op, field, type: field.type }
+}
+
+export function callStatement(call) {
+    return { kind: 'CallStatement', call }
 }
 
 export function functionCall(callee, args) {
@@ -143,11 +151,11 @@ export const standardLibrary = Object.freeze({
     boolean: boolType,
     string: stringType,
     any: anyType,
-    print: fun("print", anyToVoidType),
+    print: fun('print', anyToVoidType),
     π: variable('π', true, floatType),
     exp: fun('exp', floatToFloatType),
     ln: fun('ln', floatToFloatType),
-    void: voidType
+    void: voidType,
 })
 
 String.prototype.type = stringType

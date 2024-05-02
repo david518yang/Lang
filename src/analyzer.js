@@ -385,7 +385,7 @@ export default function analyze(match) {
             },
 
             Stmt_call(call, _semicolon) {
-                return call.rep()
+                return core.callStatement(call.rep())
             },
 
             BreakStmt(breakKeyword, _semicolon) {

@@ -94,13 +94,16 @@ const optimizers = {
     return s
   },
   ForRangeStatement(s) {
+    //console.log(typeof s.start)
     s.iterator = optimize(s.iterator)
     s.start = optimize(s.start)
     s.op = optimize(s.op)
     s.end = optimize(s.end)
     s.body = s.body.flatMap(optimize)
-    if (s.low.constructor === Number) {
-      if (s.high.constructor === Number) {
+    // console.log(s.start)
+    // console.log(s.end)
+    if (s.start === Number) {
+      if (s.end === Number) {
         if (s.start > s.end) {
           return []
         }
