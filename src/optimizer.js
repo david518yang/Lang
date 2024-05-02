@@ -1,7 +1,6 @@
 import * as core from "./core.js"
 
 export default function optimize(node) {
-  //console.log("========", node)
   return optimizers?.[node.kind]?.(node) ?? node
 }
 
@@ -50,30 +49,22 @@ const optimizers = {
     } else {
       s.alternate = s.alternate.flatMap(optimize)
     }
-    if (s.test.constructor === Boolean) {
-      return s.test ? s.consequent : s.alternate
-    }
     return s
   },
   ShortIfStatement(s) {
     s.test = optimize(s.test)
     s.consequent = s.consequent.flatMap(optimize)
-    if (s.test.constructor === Boolean) {
-      return s.test ? s.consequent : []
-    }
     return s
   },
   WhileStatement(s) {
     s.test = optimize(s.test)
     if (s.test === false) {
-      // while false is a no-op
       return []
     }
     s.body = s.body.flatMap(optimize)
     return s
   },
   ForRangeStatement(s) {
-    //console.log(typeof s.start)
     s.iterator = optimize(s.iterator)
     s.start = optimize(s.start)
     s.op = optimize(s.op)
